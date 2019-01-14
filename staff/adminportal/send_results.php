@@ -3,8 +3,8 @@
     if($_SESSION['admin_login']){
 
         include "functions/actions.php";
+
         $obj=new DataOperations();
-        $get_students = $obj->fetch_all_records("student");
         $error = $success = '';
 
 
@@ -13,40 +13,51 @@
         if(isset($_POST['send']))
         {
             $period = $obj->con->real_escape_string(htmlentities($_POST['period']));
-
-            //fetch all students
-            foreach($get_students as $row)
+            $where = array('period'=>$period);
+            $get_admissions = $obj->fetch_records('final_result',$where);
+            if($get_admissions)
             {
+                foreach($get_admissions as $row){
+                    $admission = $row['admission'];
 
-                $admission=$row['AdmissionNumber'];
-                $mobile = $row['fathersmobile'];
-                $names = $row['names'];
+                    $where=array('AdmissionNumber'=>$admission);
+                    $get_student = $obj->fetch_records('student',$where);
 
-                $sql = "SELECT GROUP_CONCAT(results.subject,CONCAT('(', results.total ,')') SEPARATOR ', '),final_result.average,final_result.grade FROM results INNER JOIN final_result ON results.admission = final_result.admission AND final_result.period = results.period WHERE results.admission = $admission AND results.period = '$period'";
-                $exe = mysqli_query($obj->con,$sql);
-
-                if(mysqli_num_rows($exe)>0)
-                {
-                    while($row = mysqli_fetch_array($exe))
+                    if($get_student)
                     {
-                        $subject_result = $row["GROUP_CONCAT(results.subject,CONCAT('(', results.total ,')') SEPARATOR ', ')"];
-                        $average = round($row['average']);
-                        $grade = $row['grade'];
-                        $result = "$names results for $period are $subject_result, Average($average), Mean grade($grade)";
-                        $where = array('admission'=>$admission,'period'=>$period);
-                        if($obj->fetch_records('final_result',$where))
+                        foreach($get_student as $row)
                         {
-                            echo $result."<br>";
+                            $names = $row['names'];
+                            $mobile = $row['fathersmobile'];
+
+
+
+                            $sql = "SELECT GROUP_CONCAT(results.subject,CONCAT('(', results.total ,')') SEPARATOR ', '),final_result.average,final_result.grade FROM results INNER JOIN final_result ON results.admission = final_result.admission AND final_result.period = results.period  WHERE results.admission = $admission AND results.period = '$period'";
+                            $exe = mysqli_query($obj->con, $sql);
+
+                            if (mysqli_num_rows($exe) > 0) {
+                                while ($row = mysqli_fetch_array($exe)) {
+
+                                    $subject_result = $row["GROUP_CONCAT(results.subject,CONCAT('(', results.total ,')') SEPARATOR ', ')"];
+                                    $average = round($row['average']);
+                                    $grade = $row['grade'];
+                                    $message = "$names  results for $period are $subject_result, Average($average), Mean grade( $grade )";
+
+
+                                    include 'sending_results.php';
+
+
+
+                                }
+                            }
                         }
-
-
                     }
+
+
                 }
-
-
-
-
             }
+
+
         }
 
 
