@@ -3,8 +3,8 @@
     if($_SESSION['admin_login']){
 
         include "functions/actions.php";
+
         $obj=new DataOperations();
-        $get_students = $obj->fetch_all_records("student");
         $error = $success = '';
 
 
@@ -15,7 +15,9 @@
             $period = $obj->con->real_escape_string(htmlentities($_POST['period']));
 
             //fetch all students
-            foreach($get_students as $row)
+            $sql = "SELECT student.AdmissionNumber,student.names,student.fathersmobile FROM student INNER JOIN final_result ON student.AdmissionNumber = final_result.admission";
+            $exe = mysqli_query($obj->con,$sql);
+            while($row = mysqli_fetch_array($exe))
             {
 
                 $admission=$row['AdmissionNumber'];
@@ -32,11 +34,13 @@
                         $subject_result = $row["GROUP_CONCAT(results.subject,CONCAT('(', results.total ,')') SEPARATOR ', ')"];
                         $average = round($row['average']);
                         $grade = $row['grade'];
-                        $result = "$names results for $period are $subject_result, Average($average), Mean grade($grade)";
+                        $message = "$names results for $period are $subject_result, Average($average), Mean grade($grade)";
                         $where = array('admission'=>$admission,'period'=>$period);
                         if($obj->fetch_records('final_result',$where))
                         {
-                            echo $result."<br>";
+
+                            //include 'sending_results.php';
+                            echo $message."<br>";
                         }
 
 

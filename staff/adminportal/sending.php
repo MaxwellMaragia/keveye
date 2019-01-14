@@ -18,7 +18,7 @@ if(isset($_POST['send']))
   $sql = "SELECT * FROM student";
   $res = mysqli_query($obj->con,$sql);
   while ($fetch_contacts = mysqli_fetch_array($res)) {
-        $contacts[] = $fetch_contacts['parent_contact'];
+        $contacts[] = $fetch_contacts['fathersmobile'];
       //$recipients = $contacts.", ";
 
        
