@@ -98,6 +98,20 @@
                     <a href="managesubjects.php"><i class="fa fa-book"></i>Manage subjects</a>
                 </li>
 
+                <!-- -->
+                <li>
+                    <a href="#"><i class="fa fa-inbox"></i>Send sms<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="sendsms.php">General</a>
+                        </li>
+                        <li>
+                            <a href="send_results.php">results</a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- -->
+
                 <li>
                     <a href="#"><i class="fa fa-home"></i>Manage Website<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
