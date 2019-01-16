@@ -2,11 +2,11 @@
     session_start();
     if(!$_SESSION['account'])
     {
-        header('../index.php');
+        header('location:../index.php');
     }
     if(!$_SESSION['term'])
     {
-        header('results.php');
+        header('location:results.php');
     }
     require('functions/fpdf/fpdf.php');
     require('functions/actions.php');
@@ -33,9 +33,17 @@
         $gender = $row['gender'];
     }
 
+    //get class during that period
+    $where_class = array('period'=>$year_term,'admission'=>$admission);
+    $get_class = $obj->fetch_records('final_result',$where_class);
+    foreach($get_class as $row)
+    {
+        $result_class = $row['class'];
+    }
+
     //get total students
-    $sql_class="SELECT * FROM student WHERE class='$class'";
-    $sql_form="SELECT * FROM student WHERE form='$form'";
+    $sql_class="SELECT * FROM final_result WHERE class='$result_class' AND period='$year_term'";
+    $sql_form="SELECT * FROM final_result WHERE form='$result_class[0]' AND period='$year_term'";
 
     $execute_class=mysqli_query($obj->con,$sql_class);
     $total_in_class=mysqli_num_rows($execute_class);
@@ -43,7 +51,7 @@
     $total_in_form=mysqli_num_rows($execute_form);
 
     //get class rank
-    $query = "SELECT admission, average FROM final_result WHERE class='$class' AND period='$year_term' ORDER BY average DESC ";
+    $query = "SELECT admission, average FROM final_result WHERE class='$result_class' AND period='$year_term' ORDER BY average DESC ";
     $exe = mysqli_query($obj->con,$query);
 
     $rank = 0;
@@ -58,7 +66,7 @@
     }
 
     //get form rank
-    $sql = "SELECT admission, average FROM final_result WHERE form='$form' AND period='$year_term' ORDER BY average DESC ";
+    $sql = "SELECT admission, average FROM final_result WHERE form='$result_class[0]' AND period='$year_term' ORDER BY average DESC ";
     $execute = mysqli_query($obj->con,$sql);
 
     $form_rank = 0;

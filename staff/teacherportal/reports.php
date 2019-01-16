@@ -88,43 +88,52 @@
             //if the student has results
             if ($fetch_total) {
 
-                //get total students
-                $sql_class = "SELECT * FROM student WHERE class='$class'";
-                $sql_form = "SELECT * FROM student WHERE form='$form'";
+                //get class during that period
+                $where_class = array('period'=>$year_term,'admission'=>$admission);
+                $get_class = $obj->fetch_records('final_result',$where_class);
+                foreach($get_class as $row)
+                {
+                    $result_class = $row['class'];
+                }
 
-                $execute_class = mysqli_query($obj->con, $sql_class);
-                $total_in_class = mysqli_num_rows($execute_class);
-                $execute_form = mysqli_query($obj->con, $sql_form);
-                $total_in_form = mysqli_num_rows($execute_form);
+                //get total students
+                $sql_class="SELECT * FROM final_result WHERE class='$result_class' AND period='$year_term'";
+                $sql_form="SELECT * FROM final_result WHERE form='$result_class[0]' AND period='$year_term'";
+
+                $execute_class=mysqli_query($obj->con,$sql_class);
+                $total_in_class=mysqli_num_rows($execute_class);
+                $execute_form=mysqli_query($obj->con,$sql_form);
+                $total_in_form=mysqli_num_rows($execute_form);
 
                 //get class rank
-                $query = "SELECT admission, average FROM final_result WHERE class='$class' AND period='$year_term' ORDER BY average DESC ";
-                $exe = mysqli_query($obj->con, $query);
+                $query = "SELECT admission, average FROM final_result WHERE class='$result_class' AND period='$year_term' ORDER BY average DESC ";
+                $exe = mysqli_query($obj->con,$query);
 
                 $rank = 0;
                 $student = array();
-                while ($res = mysqli_fetch_array($exe)) {
+                while($res = mysqli_fetch_array($exe)){
                     ++$rank;
                     $student[$res['admission']] = $rank;
 
                 }
-                if ($rank !== 0) {
-                    $class_position = $student[$admission];
+                if($rank !== 0){
+                    $class_position=$student[$admission];
                 }
 
                 //get form rank
-                $sql = "SELECT admission, average FROM final_result WHERE form='$form' AND period='$year_term' ORDER BY average DESC ";
-                $execute = mysqli_query($obj->con, $sql);
+                $sql = "SELECT admission, average FROM final_result WHERE form='$result_class[0]' AND period='$year_term' ORDER BY average DESC ";
+                $execute = mysqli_query($obj->con,$sql);
 
                 $form_rank = 0;
                 $student = array();
-                while ($res = mysqli_fetch_array($execute)) {
+                while($res = mysqli_fetch_array($execute)){
                     ++$form_rank;
                     $student[$res['admission']] = $form_rank;
                 }
-                if ($form_rank !== 0) {
-                    $form_position = $student[$admission];
+                if($form_rank !== 0){
+                    $form_position=$student[$admission];
                 }
+
 
 
                 //get min subjects
@@ -631,7 +640,7 @@
 
             $filename = $names . "-" . "$year_term" . ".pdf";
 
-            $dir = "C:/xampp/htdocs/keveye1/staff/teacherportal/reports/";
+            $dir = "reports/";
 
 
             $pdf->Output($dir . $filename, 'F');
