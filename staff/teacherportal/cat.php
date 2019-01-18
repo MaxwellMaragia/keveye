@@ -3,9 +3,9 @@ session_start();
 $_SESSION['student-result']='';
 if($_SESSION['account'])
 {
-  $_SESSION['exam']='CAT 1';
+    $_SESSION['exam']='CAT 1';
     //checking if teacher had selected correct details
-  if(($_SESSION['year'] && $_SESSION['term'] && $_SESSION['class'] && $_SESSION['subject'] && $_SESSION['exam'] ))
+  if(($_SESSION['year'] && $_SESSION['term'] && $_SESSION['class'] && $_SESSION['subject'] && $_SESSION['exam'] && $_SESSION['initials']))
   {
       include 'functions/actions.php';
 
@@ -16,6 +16,7 @@ if($_SESSION['account'])
       $year = $_SESSION['year'];
       $term = $_SESSION['term'];
       $class = $_SESSION['class'];
+      $initials = $_SESSION['initials'];
       $form = $class[0];
       $subject = $_SESSION['subject'];
       $exam = $_SESSION['exam'];
@@ -188,6 +189,7 @@ if($_SESSION['account'])
                                   "grade" =>$grade[$i],
                                   "points"=>$points[$i],
                                   "remarks"=>$remarks[$i],
+                                  "initials"=>$initials,
                                   "period" => $period,
                                   "cat_entered" => 1,
                                   "exam_entered" => 0,

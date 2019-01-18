@@ -18,6 +18,7 @@ else{
     $_SESSION['term']='';
     $_SESSION['class']= '';
     $_SESSION['subject']= '';
+    $_SESSION['initials']= '';
     $_SESSION['exam']= '';
     $_SESSION['student_id']='';
     $_SESSION['student_search_error']='';
@@ -31,6 +32,7 @@ else{
         $class= $obj->con->real_escape_string(htmlspecialchars($_POST['class']));
         $subject= $obj->con->real_escape_string(htmlspecialchars($_POST['subject']));
         $exam= $obj->con->real_escape_string(htmlspecialchars($_POST['exam']));
+        $initials = $obj->con->real_escape_string(htmlentities($_POST['initials']));
 
         if(!$obj->validate_int($year)){
 
@@ -41,18 +43,7 @@ else{
         {
             return false;
         }
-        else if($class == "Class list")
-        {
-            $error = "Please select  class";
-        }
-        else if($subject == "choose")
-        {
-            $error="Please select subject";
-        }
-        else if($exam == "choose")
-        {
-            $error="Please select the exam type";
-        }
+
         else
         {
             $_SESSION['year']=$year;
@@ -60,6 +51,7 @@ else{
             $_SESSION['class']= $class;
             $_SESSION['subject']= $subject;
             $_SESSION['exam']= $exam;
+            $_SESSION['initials']= $initials;
 
             //sending the teacher to the respective page for grading
 
@@ -169,6 +161,8 @@ else{
                                         <option value="CAT">CYCLE 1</option>
                                         <option value="EXAM">CYCLE 2</option>
                                     </select>
+                                    <label for="">Teacher initials</label>
+                                    <input type="text" name="initials" placeholder="eg HHM" class="form-control" required="required">
                                 <div class="form-group pull-right">
                                     <button type="submit" name="submit" class="btn btn-primary" style="margin-top:10px;">Proceed</button>
                                 </div>
