@@ -1,3 +1,4 @@
+<link rel="shortcut icon" type="image/png" href="../assets/images/keveye_logo.png"/>
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.css"/>

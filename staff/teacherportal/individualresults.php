@@ -252,7 +252,7 @@ else{
 
                                                             $query = "SELECT admission, average FROM final_result WHERE form='$form' AND period='$exam_period' ORDER BY average DESC";
                                                             $exe = mysqli_query($obj->con,$query);
-                                                            $sql_total = "SELECT * FROM student WHERE form='$form'";
+                                                            $sql_total = "SELECT admission FROM final_result WHERE form='$form'";
 
                                                             $rank = 0;
                                                             $student = array();
@@ -276,7 +276,7 @@ else{
 
                                                             $query = "SELECT admission, average FROM final_result WHERE class='$class' AND period='$exam_period' ORDER BY average DESC ";
                                                             $exe = mysqli_query($obj->con,$query);
-                                                            $sql_total = "SELECT * FROM student WHERE class='$class'";
+                                                            $sql_total = "SELECT admission FROM final_result WHERE class='$class'";
 
                                                             $rank = 0;
                                                             $student = array();

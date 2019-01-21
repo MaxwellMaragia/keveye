@@ -9,7 +9,7 @@ $_SESSION['password-reset']='';
   if(isset($_POST['recover']))
   {
     $admission=$obj->con->real_escape_string($_POST['admission']);
-    $question=$obj->con->real_escape_string($_POST['sq']);
+    $question=$_POST['sq'];
     $answer=$obj->con->real_escape_string($_POST['sa']);
 
     //validation

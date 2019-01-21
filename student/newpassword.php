@@ -10,7 +10,7 @@ if($_SESSION['password-reset'])
 
 
 
-  if(isset($_POST['reset']))
+  if(isset($_POST['submit']))
   {
         $password=$_POST['password'];
         $confirm=$_POST['confirm'];
@@ -30,6 +30,7 @@ if($_SESSION['password-reset'])
                   header('location:dashboard.php?password changed successfully');
               }
         }
+}
 }
 else{
     
@@ -60,7 +61,7 @@ else{
 
     <!-- Header -->
 
-    <?php include_once 'includes/student_navbar.php' ?>
+    <?php include_once 'includes/navbar.php' ?>
 
     <!-- Home -->
 
@@ -86,24 +87,23 @@ else{
                 <div class="contact_form" style="padding-top: 20px">
                     <div class="container">
                     <div class="row">
-                        <div class="col-md-3"></div>
-                        <div class=" col-md-6"><h2 style="color: #8C4200;">Change password</h2></div>
-                        <div class="col-md-3"></div>
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8"><h2 style="color: #8C4200;">Change password</h2></div>
+                        <div class="col-md-2"></div>
                     </div>
                     <div class="contact_form_container">
                         <?php
                         if($error){
                            $obj->errorDisplay($error);
                         }
-                        if($success)
-                        {
-                            $obj->successDisplay($success);
-                        }
+                        
                         ?>
                         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                            
-                            <input id="contact_form_name" class="input_field contact_form_name" type="password" placeholder="New password"   name="password">
-                            <input id="contact_form_name" class="input_field contact_form_name" type="password" placeholder="Retype password"   name="confirm">
+                            <input id="contact_form_name" class="input_field contact_form_name" type="password" placeholder="New password"  name="password" required=
+							'required'>
+                            <input id="contact_form_name" class="input_field contact_form_name" type="password" placeholder="Retype password" name="confirm" required=
+							'required'>
                             <br/>
                             <button id="contact_send_btn" type="submit" class="contact_send_btn trans_200" name="submit">Change password</button>
                         </form>
