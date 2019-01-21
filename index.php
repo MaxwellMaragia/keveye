@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>Home</title>
+    <title>FRIENDS SCHOOL KEVEYE GIRLS</title>
     <?php include_once 'includes/head.php'?>
 </head>
 <body>
