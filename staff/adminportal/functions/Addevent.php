@@ -42,12 +42,12 @@ if($count>3)
 	$res = mysqli_query($obj->con,$sql1);
 	while ($file = mysqli_fetch_array($res))
 	 {
-		$un=unlink('images/'.$file['image']);
+		$un=unlink('../../event_img/'.$file['image']);
 	}
 	$where = array("id"=>$delete[0]);
 	$delete_row = $obj->delete_record("news_events",$where);	
 }
-	  move_uploaded_file($_FILES["image"]["tmp_name"],"images/" . $_FILES["image"]["name"]);
+	  move_uploaded_file($_FILES["image"]["tmp_name"],"../../event_img/" . $_FILES["image"]["name"]);
       $success = "New event added successfully!";
 }
 else
