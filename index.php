@@ -71,8 +71,8 @@
             <div class="row">
 
                 <div class="col-lg-12 service_item text-left d-flex flex-column align-items-start justify-content-start">
-                    <p>The school started in a modest way in 1915 as a boys Primary School at the current Machakos Girls grounds. It was known as African Government School. It was not until 1939 that it changed into a boys Secondary School. In 1946 the first batch of girls were admitted making it a mixed school. It used to take students up to Form 2. The Principal of the school then was called Mr. Martin making the school to be referred to by the locals as “KwaMatingi” a corruption of for “At Martins”. Later the need to separate the girls from the boys arose and in 1950 the boys were relocated to the present site of Machakos School. It admitted African students only and hence the name “Government African Boys School”.</p>
-                    <div class="button button_color_1 text-center trans_20"><a href="about.php" >Read More</a></div>
+                    <p>The school started in a modest way in 1915 as a boys Primary School at the current Machakos Girls grounds. It was known as African Government School. It was not until 1939 that it changed into a boys Secondary School. In 1946 the first batch of girls were admitted making it a mixed school. It used to take students up to Form 2. The Principal of the school then was called Mr. Martin making the school to be referred to by the locals as “KwaMatingi” a corruption of for “At Martins”. Later the need to separate the girls from the boys arose and in 1950 the boys were relocated to the present site of Machakos School. It admitted African students only and hence the name “Government African Boys School”.<br><a href="about.php" >Read More</a></p>
+                    <div class="button button_color_1 text-center trans_20 hidden"><a href="about.php" >Read More</a></div>
                 </div>
 
             </div>
