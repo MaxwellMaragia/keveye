@@ -93,9 +93,9 @@ else{
                 <div class="contact_form" style="padding-top: 20px">
                     <div class="container">
                     <div class="row">
-                        <div class="col-md-3"></div>
-                        <div class=" col-md-6"><h2 style="color: #8C4200;">Change password</h2></div>
-                        <div class="col-md-3"></div>
+                        <div class="col-md-2"></div>
+                        <div class=" col-md-8"><h2 style="color: #8C4200;">Change password</h2></div>
+                        <div class="col-md-2"></div>
                     </div>
                     <div class="contact_form_container">
                         <?php

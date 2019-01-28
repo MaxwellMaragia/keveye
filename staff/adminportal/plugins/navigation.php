@@ -73,9 +73,9 @@
                     </ul>
                 </li>
                 <!---->
-                <li>
-                    <a href="managebursar.php"><i class="fa fa-money"></i>Manage bursar's</a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="managebursar.php"><i class="fa fa-money"></i>Manage bursar's</a>-->
+<!--                </li>-->
                 <!-- -->
                 <li>
                     <a href="managelibrarians.php"><i class="fa fa-book"></i>Manage librarian's</a>

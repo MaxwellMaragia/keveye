@@ -33,7 +33,7 @@ if(isset($_POST['login']))
         else if($security_question)
         {
             $_SESSION['student_login']=$admission;
-            header('location:dashboard.php');
+            header('location:student_result.php');
         }
     }
     else

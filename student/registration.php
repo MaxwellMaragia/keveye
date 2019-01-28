@@ -29,7 +29,7 @@ if($_SESSION['student-registration'])
             {
                 $_SESSION['student_login']=$_SESSION['student-registration'];
 				
-                header('location:dashboard.php');
+                header('location:student_result.php');
             }
 			else{
 				$error = mysqli_error($obj->con);

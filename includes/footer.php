@@ -25,9 +25,9 @@
                     <div class="footer_column_content">
                         <ul>
                             <li class="footer_list_item"><a href="index.php">Home</a></li>
-                            <!--<li class="footer_list_item"><a href="about.php">About Us</a></li>-->
+                            <li class="footer_list_item"><a href="about1.php">About Us</a></li>
                             <li class="footer_list_item"><a href="gallery.php">Gallery</a></li>
-                            <li class="footer_list_item"><a href="news.php">News</a></li>
+                            <li class="footer_list_item"><a href="news.php">Events</a></li>
                             <li class="footer_list_item"><a href="contact.php">Contact</a></li>
                         </ul>
                     </div>
@@ -39,9 +39,9 @@
                     <div class="footer_column_title" style="color:#8B4513;">Useful Links</div>
                     <div class="footer_column_content">
                         <ul>
-                            <li class="footer_list_item"><a href="portal/student_login.php">Students' portal</a></li>
-                            <li class="footer_list_item"><a href="portal/teacher_login.php">Teacher's portal</a></li>
-                            <li class="footer_list_item"><a href="portal/parent_login.php">Parents' portal</a></li>
+                            <li class="footer_list_item"><a href="portal/student_login.php">Student portal</a></li>
+                            <li class="footer_list_item"><a href="staff/index.php">Staff portal</a></li>
+
 
                         </ul>
                     </div>
@@ -81,8 +81,8 @@
 
         <div class="footer_bar d-flex flex-column flex-sm-row align-items-center">
             <div class="footer_copyright">
-					<span>
-Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | codei</a>
+                    <span>
+Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved |<a href="https://codei.co.ke"> Codei systems</a>
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></span>
             </div>
             <div class="footer_social ml-sm-auto">
