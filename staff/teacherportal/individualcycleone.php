@@ -18,7 +18,7 @@ else{
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>View results-individual student</title>
+    <title>CYCLE ONE INDIVIDUAL RESULTS</title>
     <!-- Bootstrap Styles-->
     <?php include "plugins/resources.php" ?>
 
@@ -118,7 +118,7 @@ else{
 
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                           Average results  <a class="btn btn-info" href="individualcycleone.php">CYCLE ONE</a>  <a class="btn btn-warning" href="individualcycletwo.php">CYCLE TWO</a>
+                            CYCLE ONE  <a class="btn btn-info" href="individualresults.php">AVERAGE</a>  <a class="btn btn-warning" href="individualcycletwo.php">CYCLE TWO</a>
                         </div>
                         <div class="panel-body">
                             <div class="alert alert-info">
@@ -162,11 +162,7 @@ else{
                                             <tr><?=$exam_period?></tr>
                                             <tr>
                                                 <th>SUBJECT</th>
-                                                <th>CYCLE 1 %</th>
-                                                <th>GRADE</th>
-                                                <th>CYCLE 2 %</th>
-                                                <th>GRADE</th>
-                                                <th>AVG %</th>
+                                                <th>MARK %</th>
                                                 <th>GRADE</th>
                                             </tr>
                                             </thead>
@@ -179,10 +175,6 @@ else{
                                                 <tr>
                                                     <td><?php echo $row['subject']?></td>
                                                     <td><?php echo $row['cat']?></td>
-                                                    <td><?php echo $row['cat_grade']?></td>
-                                                    <td><?php echo $row['mid']?></td>
-                                                    <td><?php echo $row['mid_grade']?></td>
-                                                    <td><?php echo $row['total']?></td>
                                                     <td><?php echo $row['grade']?></td>
                                                 </tr>
                                             <?php
@@ -196,7 +188,7 @@ else{
                                         <?php
 
                                         $where=array("admission"=>$_SESSION['student-result'],"period"=>$exam_period);
-                                        $get_final=$obj->fetch_records("final_result",$where);
+                                        $get_final=$obj->fetch_records("cycle_one",$where);
                                         foreach($get_final as $row)
                                         {
                                             $count=$row['count'];
@@ -219,107 +211,106 @@ else{
                                                 $minimum_number=$row['minimum'];
                                             }
 
-                                                ?>
-                                                <table class="table table-bordered table-striped">
-                                                    <tbody>
-                                                    <tr>
-                                                        <td>Total</td>
-                                                        <td><?php echo $total." out of ".$minimum_number*100?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Average</td>
-                                                        <td><?php echo $average?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Grade</td>
-                                                        <td><?php echo $grade?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Points</td>
-                                                        <td><?php echo $points?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Remarks</td>
-                                                        <td><?php echo $remarks?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Subjects done</td>
-                                                        <td><?php echo $count?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Subjects graded</td>
-                                                        <td><?php echo $minimum_number?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Form position</td>
-                                                        <td>
-                                                            <?php
-
-
-                                                            $query = "SELECT admission, average FROM final_result WHERE form='$form' AND period='$exam_period' ORDER BY average DESC";
-                                                            $exe = mysqli_query($obj->con,$query);
-                                                            $sql_total = "SELECT admission FROM final_result WHERE form='$form'";
-
-                                                            $rank = 0;
-                                                            $student = array();
-                                                            while($res = mysqli_fetch_array($exe)){
-                                                                ++$rank;
-                                                                $student[$res['admission']] = $rank;
-                                                                $total_in_class=mysqli_num_rows($exe);
-                                                            }
-                                                            if($rank !== 0){
-                                                                $class_position=$student[$adm];
-                                                            }
-                                                            echo $class_position." out of ".mysqli_num_rows(mysqli_query($obj->con,$sql_total));
-                                                            ?>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Class position</td>
-                                                        <td>
-                                                            <?php
-
-
-                                                            $query = "SELECT admission, average FROM final_result WHERE class='$class' AND period='$exam_period' ORDER BY average DESC ";
-                                                            $exe = mysqli_query($obj->con,$query);
-                                                            $sql_total = "SELECT admission FROM final_result WHERE class='$class'";
-
-                                                            $rank = 0;
-                                                            $student = array();
-                                                            while($res = mysqli_fetch_array($exe)){
-                                                                ++$rank;
-                                                                $student[$res['admission']] = $rank;
-                                                            }
-                                                            if($rank !== 0){
-                                                                $form_position=$student[$adm];
-                                                            }
-                                                            echo $form_position." out of ".mysqli_num_rows(mysqli_query($obj->con,$sql_total));
-                                                            ?>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <a href="report.php" TARGET="_blank" class="btn btn-info"><span class="glyphicon glyphicon-print"></span> Print report card</a>
-
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                                <?php
-
-                                            }
-                                            else
-                                            {
-                                                ?>
-                                                <div class="alert alert-danger">
-                                                    The minimum number of subjects for form <?=$form?> must not be less than <?=$minimum_number?>
-                                                    <hr/>
-                                                    Only <?=$count?> results have been uploaded for <?=$nam?> hence you cannot view his/her  total, grade and rank
-                                                </div>
-                                            <?php
-                                            }
-
                                             ?>
+                                            <table class="table table-bordered table-striped">
+                                                <tbody>
+                                                <tr>
+                                                    <td>Total</td>
+                                                    <td><?php echo $total." out of ".$minimum_number*100?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Average</td>
+                                                    <td><?php echo $average?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Grade</td>
+                                                    <td><?php echo $grade?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Points</td>
+                                                    <td><?php echo $points?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Remarks</td>
+                                                    <td><?php echo $remarks?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Subjects done</td>
+                                                    <td><?php echo $count?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Subjects graded</td>
+                                                    <td><?php echo $minimum_number?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Form position</td>
+                                                    <td>
+                                                        <?php
+
+
+                                                        $query = "SELECT admission, average FROM cycle_one WHERE form='$form' AND period='$exam_period' ORDER BY average DESC";
+                                                        $exe = mysqli_query($obj->con,$query);
+                                                        $sql_total = "SELECT admission FROM cycle_one WHERE form='$form'";
+
+                                                        $rank = 0;
+                                                        $student = array();
+                                                        while($res = mysqli_fetch_array($exe)){
+                                                            ++$rank;
+                                                            $student[$res['admission']] = $rank;
+                                                            $total_in_class=mysqli_num_rows($exe);
+                                                        }
+                                                        if($rank !== 0){
+                                                            $class_position=$student[$adm];
+                                                        }
+                                                        echo $class_position." out of ".mysqli_num_rows(mysqli_query($obj->con,$sql_total));
+                                                        ?>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Class position</td>
+                                                    <td>
+                                                        <?php
+
+
+                                                        $query = "SELECT admission, average FROM cycle_one WHERE class='$class' AND period='$exam_period' ORDER BY average DESC ";
+                                                        $exe = mysqli_query($obj->con,$query);
+                                                        $sql_total = "SELECT admission FROM cycle_one WHERE class='$class'";
+
+                                                        $rank = 0;
+                                                        $student = array();
+                                                        while($res = mysqli_fetch_array($exe)){
+                                                            ++$rank;
+                                                            $student[$res['admission']] = $rank;
+                                                        }
+                                                        if($rank !== 0){
+                                                            $form_position=$student[$adm];
+                                                        }
+                                                        echo $form_position." out of ".mysqli_num_rows(mysqli_query($obj->con,$sql_total));
+                                                        ?>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <a href="result_slip_one.php" TARGET="_blank" class="btn btn-info"><span class="glyphicon glyphicon-print"></span> Print results slip</a>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        <?php
+
+                                        }
+                                        else
+                                        {
+                                            ?>
+                                            <div class="alert alert-danger">
+                                                The minimum number of subjects for form <?=$form?> must not be less than <?=$minimum_number?>
+                                                <hr/>
+                                                Only <?=$count?> results have been uploaded for <?=$nam?> hence you cannot view his/her  total, grade and rank
+                                            </div>
+                                        <?php
+                                        }
+
+                                        ?>
 
 
                                     </div>

@@ -208,7 +208,7 @@
 
 
             <!-- /. ROW  -->
-            <footer><p>All right reserved. Design by: <a href="#">Maxwell Maragia</a></p></footer>
+            <footer><p>All right reserved. Design by: <a href="https://maxwellmaragia.codei.co.ke">Maxwell Maragia</a></p></footer>
         </div>
         <!-- /. PAGE INNER  -->
     </div>

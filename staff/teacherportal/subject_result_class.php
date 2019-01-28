@@ -60,7 +60,9 @@ else
                             <th>Names</th>
                             <th>Admission</th>
                             <th style="text-align:center;">CYCLE 1 %</th>
+                            <th style="text-align:center;">Grade</th>
                             <th style="text-align:center;">CYCLE 2 %</th>
+                            <th style="text-align:center;">Grade</th>
                             <th style="text-align:center;">AVG %</th>
                             <th style="text-align:center;">Grade</th>
                         </tr>
@@ -72,10 +74,12 @@ else
                             <tr>
                                 <td><?php echo $get_results['names'] ?></td>
                                 <td><?php echo $get_results['admission'] ?></td>
-                                <td align="middle"><?php echo $get_results['cat']*2 ?></td>
-                                <td align="middle"><?php echo $get_results['mid']*2 ?></td>
+                                <td align="middle"><?php echo $get_results['cat']?></td>
+                                <td align="middle" style="color:blue;"><?php echo $get_results['cat_grade']?></td>
+                                <td align="middle"><?php echo $get_results['mid'] ?></td>
+                                <td align="middle" style="color:blue;"><?php echo $get_results['mid_grade'] ?></td>
                                 <td align="middle"><?php echo $get_results['total'] ?></td>
-                                <td align="middle"><?php echo $get_results['grade'] ?></td>
+                                <td align="middle" style="color:blue;"><?php echo $get_results['grade'] ?></td>
 
                             </tr>
                         <?php

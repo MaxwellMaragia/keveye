@@ -6,6 +6,7 @@ if($_SESSION['student-registration'])
     include 'functions/actions.php';
     $obj=new DataOperations();
     $error='';
+	
 
     if(isset($_POST['submit']))
     {
@@ -21,13 +22,18 @@ if($_SESSION['student-registration'])
         else
         {
             $where = array('AdmissionNumber'=>$_SESSION['student-registration']);
+			
             $data = array('security_question'=>$sq,'security_answer'=>$sa,'password'=>md5($pass));
 
             if($obj->update_record('student',$where,$data))
             {
                 $_SESSION['student_login']=$_SESSION['student-registration'];
-                header('location:dashboard.php');
+				
+                header('location:student_result.php');
             }
+			else{
+				$error = mysqli_error($obj->con);
+			}
         }
     }
 
@@ -100,8 +106,8 @@ else{
                         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                             <select name="sq" class="input_field contact_form_name" required="required">
                                <option value="">Select security question</option> 
-                               <option >What's the name of your first pet?</option>
-                               <option >What's your favorite food?</option>
+                               <option >What is the name of your first pet?</option>
+                               <option >What is your favorite food?</option>
                                <option >Who is your favorite musician?</option>
                             </select>
                             <input id="contact_form_name" class="input_field contact_form_name" type="text" placeholder="Answer to security question"   name="sa" required="required">

@@ -18,9 +18,9 @@
             <div class="main_nav">
                 <ul class="main_nav_list">
                     <li class="main_nav_item ">
-                    <li class="main_nav_item"><a href="dashboard.php">Home</a></li>
-                    <li class="main_nav_item"><a href="student_result.php">View results</a></li>
-                    <li class="main_nav_item"><a href="fee.php">Fees</a></li>
+<!--                    <li class="main_nav_item"><a href="dashboard.php">Home</a></li>-->
+                       <li class="main_nav_item"><a href="student_result.php">Exam results</a></li>
+<!--                    <li class="main_nav_item"><a href="fee.php">Fees</a></li>-->
                         <a class=" dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo "$names ( $admission ,$class )"; ?></a>
                         <div style="border-radius: unset" class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
                             
