@@ -50,7 +50,7 @@ else
 <div id="page-wrapper">
     <div id="page-inner">
         <!--        contents-->
-        <?php include 'plugins/viewresultsnav.php' ?>
+        <?php include 'plugins/viewfinalresultsnav.php' ?>
 
         <?php
 
@@ -59,13 +59,13 @@ else
           ?>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Form <?=$class?> results for <?=$period?>
+                    Form <?=$class?> final average results for <?=$period?>
                 </div>
                 <div class="panel-body">
 
                     <div class="table-responsive">
                         <form action="<?php echo htmlentities($_SERVER['PHP_SELF'])?>" method="post">
-                            <button name="download" type="submit" class="btn btn-primary" style="margin-bottom: 10px;"><span class="glyphicon glyphicon-download-alt"></span> Download reports</button>
+                            <button name="download" type="submit" class="btn btn-primary" style="margin-bottom: 10px;"><span class="glyphicon glyphicon-download-alt"></span> Download report forms</button>
                         <table class="table table-bordered table-striped" id="example">
                             <thead>
                             <tr>

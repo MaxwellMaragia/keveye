@@ -61,6 +61,7 @@ if($_SESSION['account'])
                         exist
                       */
                       $mark[$i] = $mark[$i] / 2;
+                      $cycle_one[$i] = $mark[$i]*2;
 
                       $where=array("admission"=>$admission[$i],"period"=>$period,"subject"=>$subject);
                       $fetch_results=$obj->fetch_records("results",$where);
@@ -73,7 +74,7 @@ if($_SESSION['account'])
                           {
                               $total[$i] = $row['total'] + $mark[$i];
 
-                              //getting grade for updating
+                              //getting grade for average
                               $sql = "SELECT * FROM grading_system WHERE upper_limit>=round($total[$i]) AND lower_limit<=round($total[$i])";
                               $execute = mysqli_query($obj->con, $sql);
 
@@ -85,12 +86,21 @@ if($_SESSION['account'])
                                       $remarks[$i] = $get_grades['remarks'];
                                   }
 
+                                  //getting grade for cycle 1
+                                  $sql = "SELECT * FROM grading_system WHERE upper_limit>=$cycle_one[$i] AND lower_limit<=$cycle_one[$i]";
+                                  $execute = mysqli_query($obj->con, $sql);
+
+                                      while ($get_grades = mysqli_fetch_assoc($execute)) {
+                                          $cycle_one_grade[$i] = $get_grades['grade'];
+                                      }
+
                                   //updating data to subject results table
 
 
                                   $data = array(
 
-                                      "cat" => $mark[$i],
+                                      "cat" => $cycle_one[$i],
+                                      "cat_grade"=>$cycle_one_grade[$i],
                                       "total" => $total[$i],
                                       "grade" => $grade[$i],
                                       "points" => $points[$i],
@@ -152,20 +162,115 @@ if($_SESSION['account'])
 
                                       if ($obj->update_record("final_result", $where, $data)) {
 
-                                          $success = "Exam results for form $class in $period have been uploaded successfully";
 
+                                          //updating in cycle 1 results table
+
+                                          //getting from cycle 1 results table so as to update
+                                          $where=array("admission"=>$admission[$i],"period"=>$period);
+                                          $get_final=$obj->fetch_records("cycle_one",$where);
+
+
+                                          //if results exist in cycle one table
+                                          if($get_final)
+                                          {
+                                              foreach($get_final as $row)
+                                              {
+                                                  $total_mark[$i]=$row['total']+$cycle_one[$i];
+                                                  $count[$i] = $row['count'];
+
+                                              }
+
+
+                                              $average[$i]=$total_mark[$i]/$min;
+
+
+                                              //get new grade
+                                              $sql = "SELECT * FROM grading_system WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
+                                              $execute = mysqli_query($obj->con, $sql);
+
+                                              if ($execute) {
+
+                                                  while ($get_grades = mysqli_fetch_assoc($execute)) {
+                                                      $grade[$i] = $get_grades['grade'];
+                                                      $points[$i] = $get_grades['points'];
+                                                      $remarks[$i] = $get_grades['remarks'];
+                                                  }
+                                              }
+                                              //data update in final results table
+
+                                              //updating data to results table
+                                              $data = array(
+
+                                                  $subject => $cycle_one[$i],
+                                                  "total" => $total_mark[$i],
+                                                  "cumulative"=>$total_mark[$i],
+                                                  "average" => $average[$i],
+                                                  "grade" => $grade[$i],
+                                                  "points" => $points[$i],
+                                                  "remarks" => $remarks[$i]
+
+                                              );
+                                              $where = array("admission" => $admission[$i], "period" => $period);
+
+                                              if ($obj->update_record("cycle_one", $where, $data)) {
+
+                                                  $success = "Exam results for form $class in $period have been uploaded successfully";
+
+                                              }
+                                          }
+                                          //if there are no results in cycle one table
+                                          else{
+
+
+                                              $average[$i]=$cycle_one[$i]/$min;
+
+                                              $sql_grade = "SELECT * FROM grading_system WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
+                                              $execute_grade = mysqli_query($obj->con, $sql_grade);
+
+                                              if ($execute_grade) {
+
+                                                  while ($get_grades = mysqli_fetch_assoc($execute_grade)) {
+                                                      $grade[$i] = $get_grades['grade'];
+                                                      $points[$i] = $get_grades['points'];
+                                                      $remarks[$i] = $get_grades['remarks'];
+                                                  }
+                                              }
+
+
+                                              $data = array(
+                                                  "names" => $names[$i],
+                                                  "admission" => $admission[$i],
+                                                  "class" => $class,
+                                                  "form" =>$class[0],
+                                                  "period" => $period,
+                                                  $subject => $cycle_one[$i],
+                                                  "total" => $cycle_one[$i],
+                                                  "cumulative"=>$cycle_one[$i],
+                                                  "count" => 1,
+                                                  "average" => $average[$i],
+                                                  "grade" =>$grade[$i],
+                                                  "points"=>$points[$i],
+                                                  "remarks"=>$remarks[$i],
+                                                  "term"=>$term
+
+                                              );
+                                              if ($obj->insert_record("cycle_one", $data)) {
+
+                                                  $success = "Exam results for form $class in $period have been uploaded successfully";
+
+                                              }
+
+                                          }
                                       }
                                    }
+                                }
+                             }
+                         }
 
-                               }
-
-                          }
-
-                      }
                       //if no result exist in results table
                       else
                       {
-                            //fetching the grade for grading
+                            //fetching the grade for average
 
                           $sql_grade="SELECT * FROM grading_system WHERE upper_limit>=round($mark[$i]) AND lower_limit<=round($mark[$i])";
                           $execute_grade=mysqli_query($obj->con,$sql_grade);
@@ -178,18 +283,28 @@ if($_SESSION['account'])
                                   $remarks[$i] = $get_grades['remarks'];
                               }
 
+                              //getting grade for cycle 1
+                              $sql = "SELECT * FROM grading_system WHERE upper_limit>=$cycle_one[$i] AND lower_limit<=$cycle_one[$i]";
+                              $execute = mysqli_query($obj->con, $sql);
+
+                              while ($get_grades = mysqli_fetch_assoc($execute)) {
+                                  $cycle_one_grade[$i] = $get_grades['grade'];
+                              }
+
                               $data = array(
                                   "names" => $names[$i],
                                   "admission" => $admission[$i],
                                   "class" => $class,
                                   "form" => $form,
                                   "subject" => $subject,
-                                  "cat" => $mark[$i],
+                                  "cat" => $cycle_one[$i],
+                                  "cat_grade"=>$cycle_one_grade[$i],
                                   "total" => $mark[$i],
                                   "grade" =>$grade[$i],
                                   "points"=>$points[$i],
                                   "remarks"=>$remarks[$i],
                                   "initials"=>$initials,
+                                  "term"=>$term,
                                   "period" => $period,
                                   "cat_entered" => 1,
                                   "exam_entered" => 0,
@@ -213,7 +328,6 @@ if($_SESSION['account'])
                                           $total_new[$i]=$total_mark[$i];
                                           $subject_total[$i]=$row[$subject]+$mark[$i];
                                           $count[$i]=$row['count']+1;
-
                                       }
 
                                       $average[$i]=$total_mark[$i]/$min;
@@ -253,7 +367,103 @@ if($_SESSION['account'])
                                           $where = array("admission" => $admission[$i], "period" => $period);
 
                                           if ($obj->update_record("final_result", $where, $data)) {
-                                              $success = "Exam results for form $class in $period have been uploaded successfully";
+                                              //updating in cycle 1 results table
+
+                                              //getting from cycle 1 results table so as to update
+                                              $where=array("admission"=>$admission[$i],"period"=>$period);
+                                              $get_final=$obj->fetch_records("cycle_one",$where);
+
+                                              //if results exist in cycle one table
+                                              if($get_final)
+                                              {
+                                                  foreach($get_final as $row)
+                                                  {
+                                                      $total_mark[$i]=$row['total']+$cycle_one[$i];
+                                                      $count[$i] = $row['count'];
+
+                                                  }
+
+
+                                                  $average[$i]=$total_mark[$i]/$min;
+
+
+                                                  //get new grade
+                                                  $sql = "SELECT * FROM grading_system WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
+                                                  $execute = mysqli_query($obj->con, $sql);
+
+                                                  if ($execute) {
+
+                                                      while ($get_grades = mysqli_fetch_assoc($execute)) {
+                                                          $grade[$i] = $get_grades['grade'];
+                                                          $points[$i] = $get_grades['points'];
+                                                          $remarks[$i] = $get_grades['remarks'];
+                                                      }
+                                                  }
+                                                  //data update in final results table
+
+                                                  //updating data to results table
+                                                  $data = array(
+
+                                                      $subject => $cycle_one[$i],
+                                                      "total" => $total_mark[$i],
+                                                      "cumulative"=>$total_mark[$i],
+                                                      "average" => $average[$i],
+                                                      "grade" => $grade[$i],
+                                                      "points" => $points[$i],
+                                                      "remarks" => $remarks[$i]
+
+                                                  );
+                                                  $where = array("admission" => $admission[$i], "period" => $period);
+
+                                                  if ($obj->update_record("cycle_one", $where, $data)) {
+
+                                                      $success = "Exam results for form $class in $period have been uploaded successfully";
+
+                                                  }
+                                              }
+                                              //if there are no results in cycle one table
+                                              else{
+
+
+                                                  $average[$i]=$cycle_one[$i]/$min;
+
+                                                  $sql_grade = "SELECT * FROM grading_system WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
+                                                  $execute_grade = mysqli_query($obj->con, $sql_grade);
+
+                                                  if ($execute_grade) {
+
+                                                      while ($get_grades = mysqli_fetch_assoc($execute_grade)) {
+                                                          $grade[$i] = $get_grades['grade'];
+                                                          $points[$i] = $get_grades['points'];
+                                                          $remarks[$i] = $get_grades['remarks'];
+                                                      }
+                                                  }
+
+
+                                                  $data = array(
+                                                      "names" => $names[$i],
+                                                      "admission" => $admission[$i],
+                                                      "class" => $class,
+                                                      "form" =>$class[0],
+                                                      "period" => $period,
+                                                      $subject => $cycle_one[$i],
+                                                      "total" => $cycle_one[$i],
+                                                      "cumulative"=>$cycle_one[$i],
+                                                      "count" => 1,
+                                                      "average" => $average[$i],
+                                                      "grade" =>$grade[$i],
+                                                      "points"=>$points[$i],
+                                                      "remarks"=>$remarks[$i],
+                                                      "term"=>$term
+
+                                                  );
+                                                  if ($obj->insert_record("cycle_one", $data)) {
+
+                                                      $success = "Exam results for form $class in $period have been uploaded successfully";
+
+                                                  }
+
+                                              }
                                           }
 
 
@@ -262,7 +472,7 @@ if($_SESSION['account'])
                                   //if results do not exist
                                   else
                                   {
-
+                                      //updating to final results table
                                       //entering new data
 									  
 									  //calculate the grade
@@ -302,7 +512,52 @@ if($_SESSION['account'])
 
                                       if($obj->insert_record("final_result",$data))
                                       {
-                                          $success="Exam results for form $class in $period have been uploaded successfully";
+
+                                          //update to cycle 1 table
+                                          //calculate the grade
+
+                                          $average[$i]=$cycle_one[$i]/$min;
+
+                                          $sql_grade = "SELECT * FROM grading_system WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
+                                          $execute_grade = mysqli_query($obj->con, $sql_grade);
+
+                                          if ($execute_grade) {
+
+                                              while ($get_grades = mysqli_fetch_assoc($execute_grade)) {
+                                                  $grade[$i] = $get_grades['grade'];
+                                                  $points[$i] = $get_grades['points'];
+                                                  $remarks[$i] = $get_grades['remarks'];
+                                              }
+                                          }
+
+
+                                          $data = array(
+                                              "names" => $names[$i],
+                                              "admission" => $admission[$i],
+                                              "class" => $class,
+                                              "form" =>$class[0],
+                                              "period" => $period,
+                                              $subject => $cycle_one[$i],
+                                              "total" => $cycle_one[$i],
+                                              "cumulative"=>$cycle_one[$i],
+                                              "count" => 1,
+                                              "average" => $average[$i],
+                                              "grade" =>$grade[$i],
+                                              "points"=>$points[$i],
+                                              "remarks"=>$remarks[$i],
+                                              "term"=>$term
+
+                                          );
+                                          if ($obj->insert_record("cycle_one", $data)) {
+
+                                              $success = "Exam results for form $class in $period have been uploaded successfully";
+
+                                          }
+                                          else
+                                          {
+                                              $error=mysqli_error($obj->con);
+                                          }
+
                                       }
                                       else
                                       {
@@ -398,7 +653,7 @@ else
                                         <li>If a certain student does not take this subject, leave the field blank, it will not be saved</li>
                                         <li>Marks entered must be numerical and less than or equal to <?=$limit?>, fields with other values will not be saved</li>
                                         <li>After submitting results, verify that all student marks have been entered</li>
-                                        </ul>
+                                    </ul>
                                 </div>
                                 <?php
                                 if($success)
@@ -416,7 +671,7 @@ else
                                     <tr>
                                         <th>Admission number</th>
                                         <th>Student names</th>
-                                        <th>Cat 1 result field (X/
+                                        <th>CYCLE 1 result field (X/
                                             <?php
                                             echo +$limit;
                                             ?>

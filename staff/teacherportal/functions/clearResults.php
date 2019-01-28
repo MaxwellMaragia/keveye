@@ -18,7 +18,13 @@
           {
               if($obj->delete_record("final_result",$where))
               {
-                  $success="Results deleted successfully";
+                  if($obj->delete_record("cycle_one",$where))
+                  {
+                      if($obj->delete_record("cycle_two",$where))
+                      {
+                          $success="Results deleted successfully";
+                      }
+                  }
               }
           }
       }

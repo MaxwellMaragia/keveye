@@ -1,6 +1,6 @@
 <?php
 session_start();
-$_SESSION['student-login']='';
+$_SESSION['student_login']='';
 $_SESSION['student-registration']='';
 include 'functions/actions.php';
 $obj=new DataOperations();
