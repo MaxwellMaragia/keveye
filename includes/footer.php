@@ -39,7 +39,7 @@
                     <div class="footer_column_title" style="color:#8B4513;">Useful Links</div>
                     <div class="footer_column_content">
                         <ul>
-                            <li class="footer_list_item"><a href="portal/student_login.php">Student portal</a></li>
+                            <li class="footer_list_item"><a href="student/student_login.php">Student portal</a></li>
                             <li class="footer_list_item"><a href="staff/index.php">Staff portal</a></li>
 
 
