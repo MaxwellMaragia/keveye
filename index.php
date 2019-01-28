@@ -119,7 +119,7 @@
                     <!-- Popular Course Item -->
                     <div class="col-lg-4 course_box">
                         <div class="card">
-                            <img class="card-img-top" src="<?php echo 'images/'.$disp_gallery['image'] ?>" style="width: 350px;height: 230px;">
+                            <img class="card-img-top" src="<?php echo 'gallery/'.$disp_gallery['image'] ?>" style="width: 350px;height: 230px;">
 
                         </div>
                     </div>

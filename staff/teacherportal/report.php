@@ -230,13 +230,15 @@ if($fetch_total)
 
     $pdf->SetFont('Arial','b','7');
     $pdf->Cell(5,8,'',0,1);
-    $pdf->Cell(40  ,6,'SUBJECT',1,0);
+    $pdf->Cell(30  ,6,'SUBJECT',1,0);
     $pdf->Cell(17  ,6,'CYCLE 1 %',1,0);
+    $pdf->Cell(12  ,6,'GRADE',1,0);
     $pdf->Cell(17  ,6,'CYCLE 2 %',1,0);
+    $pdf->Cell(12  ,6,'GRADE',1,0);
     $pdf->Cell(17  ,6,'AV %',1,0);
-    $pdf->Cell(17  ,6,'GRADE',1,0);
+    $pdf->Cell(12  ,6,'GRADE',1,0);
     $pdf->Cell(17  ,6,'POINTS',1,0);
-    $pdf->Cell(50  ,6,'REMARKS',1,0);
+    $pdf->Cell(41  ,6,'REMARKS',1,0);
     $pdf->Cell(17  ,6,'INITIALS',1,1);
 
     $get_subjects=$obj->fetch_all_records("subject");
@@ -246,7 +248,9 @@ if($fetch_total)
         $where = array("admission" => $admission, "period" => $year_term, "subject" => $row['SubjectName']);
         $fetch_results = $obj->fetch_records("results", $where);
         $cat='';
+        $cat_grade='';
         $end='';
+        $end_grade='';
         $total='';
         $grade='';
         $points='';
@@ -255,7 +259,9 @@ if($fetch_total)
 
         foreach ($fetch_results as $row) {
             $cat = $row['cat'];
+            $cat_grade = $row['cat_grade'];
             $end=$row['mid'];
+            $end_grade = $row['mid_grade'];
             $total=$row['total'];
             $grade=$row['grade'];
             $points=$row['points'];
@@ -263,14 +269,16 @@ if($fetch_total)
             $initials=$row['initials'];
 
         }
-        $pdf->SetFont('Arial', '', '9');
-        $pdf->Cell(40, 5, $subject, 1, 0);
+        $pdf->SetFont('Arial', '', '8');
+        $pdf->Cell(30, 5, $subject, 1, 0);
         $pdf->Cell(17, 5, $cat, 1, 0);
+        $pdf->Cell(12, 5, $cat_grade, 1, 0);
         $pdf->Cell(17, 5, $end, 1, 0);
+        $pdf->Cell(12, 5, $end_grade, 1, 0);
         $pdf->Cell(17, 5, $total, 1, 0);
-        $pdf->Cell(17, 5, $grade, 1, 0);
+        $pdf->Cell(12, 5, $grade, 1, 0);
         $pdf->Cell(17, 5, $points, 1, 0);
-        $pdf->Cell(50, 5, $remarks, 1, 0);
+        $pdf->Cell(41, 5, $remarks, 1, 0);
         $pdf->Cell(17, 5, $initials, 1, 1);
 
 
@@ -357,9 +365,9 @@ if($fetch_total)
     $fetch = $obj->fetch_records('final_result',$where);
     foreach($fetch as $row)
     {
-        
+
         $f1t1g = $row['grade'];
-        
+
         //calculate points
         $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 1 AND term=1";
         $exe = mysqli_query($obj->con,$sql);
@@ -370,10 +378,10 @@ if($fetch_total)
         }
 
         //get form rank
-       
+
         $sql = "SELECT admission, average FROM final_result WHERE form=1 AND term=1 ORDER BY average DESC ";
         $execute = mysqli_query($obj->con,$sql);
-        
+
         $f3t1t = mysqli_num_rows($execute);
 
 
@@ -393,9 +401,9 @@ if($fetch_total)
     $fetch = $obj->fetch_records('final_result',$where);
     foreach($fetch as $row)
     {
-        
+
         $f1t2g = $row['grade'];
-    
+
         //calculate points
         $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 1 AND term=2";
         $exe = mysqli_query($obj->con,$sql);
@@ -406,10 +414,10 @@ if($fetch_total)
         }
 
         //get form rank
-       
+
         $sql = "SELECT admission, average FROM final_result WHERE form=3 AND term=2 ORDER BY average DESC ";
         $execute = mysqli_query($obj->con,$sql);
-        
+
         $f1t2t = mysqli_num_rows($execute);
 
 
@@ -430,7 +438,7 @@ if($fetch_total)
     foreach($fetch as $row)
     {
         $f1t3g = $row['grade'];
-    
+
         //calculate points
         $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 1 AND term=3";
         $exe = mysqli_query($obj->con,$sql);
@@ -441,10 +449,10 @@ if($fetch_total)
         }
 
         //get form rank
-       
+
         $sql = "SELECT admission, average FROM final_result WHERE form=3 AND term=2 ORDER BY average DESC ";
         $execute = mysqli_query($obj->con,$sql);
-        
+
         $f1t3t = mysqli_num_rows($execute);
 
 
@@ -465,7 +473,7 @@ if($fetch_total)
     foreach($fetch as $row)
     {
         $f2t1g = $row['grade'];
-    
+
         //calculate points
         $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 2 AND term=1";
         $exe = mysqli_query($obj->con,$sql);
@@ -476,10 +484,10 @@ if($fetch_total)
         }
 
         //get form rank
-       
+
         $sql = "SELECT admission, average FROM final_result WHERE form=2 AND term=1 ORDER BY average DESC ";
         $execute = mysqli_query($obj->con,$sql);
-        
+
         $f2t1t = mysqli_num_rows($execute);
 
 
@@ -499,8 +507,8 @@ if($fetch_total)
     $fetch = $obj->fetch_records('final_result',$where);
     foreach($fetch as $row)
     {
-         $f2t2g = $row['grade'];
-    
+        $f2t2g = $row['grade'];
+
         //calculate points
         $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 2 AND term=2";
         $exe = mysqli_query($obj->con,$sql);
@@ -511,10 +519,10 @@ if($fetch_total)
         }
 
         //get form rank
-       
+
         $sql = "SELECT admission, average FROM final_result WHERE form=2 AND term=2 ORDER BY average DESC ";
         $execute = mysqli_query($obj->con,$sql);
-        
+
         $f2t2t = mysqli_num_rows($execute);
 
 
@@ -534,8 +542,8 @@ if($fetch_total)
     $fetch = $obj->fetch_records('final_result',$where);
     foreach($fetch as $row)
     {
-         $f2t3g = $row['grade'];
-    
+        $f2t3g = $row['grade'];
+
         //calculate points
         $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 2 AND term=3";
         $exe = mysqli_query($obj->con,$sql);
@@ -546,10 +554,10 @@ if($fetch_total)
         }
 
         //get form rank
-       
+
         $sql = "SELECT admission, average FROM final_result WHERE form=2 AND term=3 ORDER BY average DESC ";
         $execute = mysqli_query($obj->con,$sql);
-        
+
         $f2t3t = mysqli_num_rows($execute);
 
 
@@ -570,7 +578,7 @@ if($fetch_total)
     foreach($fetch as $row)
     {
         $f3t1g = $row['grade'];
-    
+
         //calculate points
         $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 3 AND term=1";
         $exe = mysqli_query($obj->con,$sql);
@@ -581,10 +589,10 @@ if($fetch_total)
         }
 
         //get form rank
-       
+
         $sql = "SELECT admission, average FROM final_result WHERE form=3 AND term=1 ORDER BY average DESC ";
         $execute = mysqli_query($obj->con,$sql);
-        
+
         $f3t1t = mysqli_num_rows($execute);
 
 
@@ -605,8 +613,8 @@ if($fetch_total)
     $fetch = $obj->fetch_records('final_result',$where);
     foreach($fetch as $row)
     {
-       $f3t2g = $row['grade'];
-    
+        $f3t2g = $row['grade'];
+
         //calculate points
         $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 3 AND term=2";
         $exe = mysqli_query($obj->con,$sql);
@@ -616,11 +624,11 @@ if($fetch_total)
             $f3t2p = $tpoints/$min;
         }
 
-         //get form rank
-       
+        //get form rank
+
         $sql = "SELECT admission, average FROM final_result WHERE form=3 AND term=2 ORDER BY average DESC ";
         $execute = mysqli_query($obj->con,$sql);
-        
+
         $f3t2t = mysqli_num_rows($execute);
 
 
@@ -629,7 +637,7 @@ if($fetch_total)
         while($res = mysqli_fetch_array($execute)){
             ++$form_rank;
             $student[$res['admission']] = $form_rank;
-        }   
+        }
         if($form_rank !== 0){
             $f3t2r=$student[$admission];
         }
@@ -640,9 +648,9 @@ if($fetch_total)
     $fetch = $obj->fetch_records('final_result',$where);
     foreach($fetch as $row)
     {
-          
+
         $f3t3g = $row['grade'];
-    
+
         //calculate points
         $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 3 AND term=3";
         $exe = mysqli_query($obj->con,$sql);
@@ -653,10 +661,10 @@ if($fetch_total)
         }
 
         //get form rank
-       
+
         $sql = "SELECT admission, average FROM final_result WHERE form=3 AND term=3 ORDER BY average DESC ";
         $execute = mysqli_query($obj->con,$sql);
-        
+
         $f3t1t = mysqli_num_rows($execute);
 
 
@@ -677,7 +685,7 @@ if($fetch_total)
     foreach($fetch as $row)
     {
         $f4t1g = $row['grade'];
-    
+
         //calculate points
         $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 4 AND term=1";
         $exe = mysqli_query($obj->con,$sql);
@@ -694,7 +702,7 @@ if($fetch_total)
     foreach($fetch as $row)
     {
         $f4t2g = $row['grade'];
-    
+
         //calculate points
         $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 4 AND term=2";
         $exe = mysqli_query($obj->con,$sql);
@@ -705,190 +713,190 @@ if($fetch_total)
         }
     }
 
-    }
+}
 
-    //form 4 term 3 results
-    $where = array('form'=>4,'admission'=>$admission,'term'=>3);
-    $fetch = $obj->fetch_records('final_result',$where);
-    foreach($fetch as $row)
+//form 4 term 3 results
+$where = array('form'=>4,'admission'=>$admission,'term'=>3);
+$fetch = $obj->fetch_records('final_result',$where);
+foreach($fetch as $row)
+{
+    $f4t3g = $row['grade'];
+
+    //calculate points
+    $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 4 AND term=3";
+    $exe = mysqli_query($obj->con,$sql);
+    while($get_total = mysqli_fetch_assoc($exe))
     {
-        $f4t3g = $row['grade'];
-    
-        //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 4 AND term=3";
-        $exe = mysqli_query($obj->con,$sql);
-        while($get_total = mysqli_fetch_assoc($exe))
-        {
-            $tpoints = $get_total['SUM(points)'];
-            $f4t3p = $tpoints/$min;
-        }
+        $tpoints = $get_total['SUM(points)'];
+        $f4t3p = $tpoints/$min;
     }
-    
+}
 
 
 
-    $pdf->Cell(39,-5,'',0,1);
-    $pdf->Cell(48,6,'Form 1',1,0);
-    $pdf->Cell(48,6,'Form 2',1,0);
-    $pdf->Cell(48,6,'Form 3',1,0);
-    $pdf->Cell(48,6,'Form 4',1,1);
-    $pdf->SetFont('Arial','','6');
-    $pdf->Cell(8,6,'Term',1,0);
-    $pdf->Cell(10,6,'pos',1,0);
-    $pdf->Cell(10,6,'Out of',1,0);
-    $pdf->Cell(12,6,'MPTS',1,0);
-    $pdf->Cell(8,6,'grade',1,0);
-    $pdf->Cell(8,6,'Term',1,0);
-    $pdf->Cell(10,6,'pos',1,0);
-    $pdf->Cell(10,6,'Out of',1,0);
-    $pdf->Cell(12,6,'MPTS',1,0);
-    $pdf->Cell(8,6,'grade',1,0);
-    $pdf->Cell(8,6,'Term',1,0);
-    $pdf->Cell(10,6,'pos',1,0);
-    $pdf->Cell(10,6,'Out of',1,0);
-    $pdf->Cell(12,6,'MPTS',1,0);
-    $pdf->Cell(8,6,'grade',1,0);
-    $pdf->Cell(8,6,'Term',1,0);
-    $pdf->Cell(10,6,'pos',1,0);
-    $pdf->Cell(10,6,'Out of',1,0);
-    $pdf->Cell(12,6,'MPTS',1,0);
-    $pdf->Cell(8,6,'grade',1,1);
-    $pdf->Cell(8,6,'1',1,0);
-    $pdf->Cell(10,6,$f1t1r,1,0);
-    $pdf->Cell(10,6,$f1t1t,1,0);
-    $pdf->Cell(12,6,$f1t1p,1,0);
-    $pdf->Cell(8,6,$f1t1g,1,0);
-    $pdf->Cell(8,6,'1',1,0);
-    $pdf->Cell(10,6,$f2t1r,1,0);
-    $pdf->Cell(10,6,$f2t1t,1,0);
-    $pdf->Cell(12,6,$f2t1p,1,0);
-    $pdf->Cell(8,6,$f2t1g,1,0);
-    $pdf->Cell(8,6,'1',1,0);
-    $pdf->Cell(10,6,$f3t1r,1,0);
-    $pdf->Cell(10,6,$f3t1t,1,0);
-    $pdf->Cell(12,6,$f3t1p,1,0);
-    $pdf->Cell(8,6,$f3t1g,1,0);
-    $pdf->Cell(8,6,'1',1,0);
-    $pdf->Cell(10,6,$f4t1r,1,0);
-    $pdf->Cell(10,6,$f4t1t,1,0);
-    $pdf->Cell(12,6,$f4t1p,1,0);
-    $pdf->Cell(8,6,$f4t1g,1,1);
-    $pdf->Cell(8,6,'2',1,0);
-    $pdf->Cell(10,6,$f1t2r,1,0);
-    $pdf->Cell(10,6,$f1t2t,1,0);
-    $pdf->Cell(12,6,$f1t2p,1,0);
-    $pdf->Cell(8,6,$f1t2g,1,0);
-    $pdf->Cell(8,6,'2',1,0);
-    $pdf->Cell(10,6,$f2t2r,1,0);
-    $pdf->Cell(10,6,$f2t2t,1,0);
-    $pdf->Cell(12,6,$f2t2p,1,0);
-    $pdf->Cell(8,6,$f2t2g,1,0);
-    $pdf->Cell(8,6,'2',1,0);
-    $pdf->Cell(10,6,$f3t2r,1,0);
-    $pdf->Cell(10,6,$f3t2t,1,0);
-    $pdf->Cell(12,6,$f3t2p,1,0);
-    $pdf->Cell(8,6,$f3t2g,1,0);
-    $pdf->Cell(8,6,'2',1,0);
-    $pdf->Cell(10,6,$f4t2r,1,0);
-    $pdf->Cell(10,6,$f4t2t,1,0);
-    $pdf->Cell(12,6,$f4t2p,1,0);
-    $pdf->Cell(8,6,$f4t2g,1,1);
-    $pdf->Cell(8,6,'3',1,0);
-    $pdf->Cell(10,6,$f1t3r,1,0);
-    $pdf->Cell(10,6,$f1t3t,1,0);
-    $pdf->Cell(12,6,$f1t3p,1,0);
-    $pdf->Cell(8,6,$f1t3g,1,0);
-    $pdf->Cell(8,6,'3',1,0);
-    $pdf->Cell(10,6,$f2t3r,1,0);
-    $pdf->Cell(10,6,$f2t3t,1,0);
-    $pdf->Cell(12,6,$f2t3p,1,0);
-    $pdf->Cell(8,6,$f2t3g,1,0);
-    $pdf->Cell(8,6,'3',1,0);
-    $pdf->Cell(10,6,$f3t3r,1,0);
-    $pdf->Cell(10,6,$f3t3t,1,0);
-    $pdf->Cell(12,6,$f3t3p,1,0);
-    $pdf->Cell(8,6,$f3t3g,1,0);
-    $pdf->Cell(8,6,'3',1,0);
-    $pdf->Cell(10,6,$f4t3r,1,0);
-    $pdf->Cell(10,6,$f4t3t,1,0);
-    $pdf->Cell(12,6,$f4t3p,1,0);
-    $pdf->Cell(8,6,$f4t3g,1,1);
-    $pdf->Cell(113,2,'',0,0);
-    $pdf->Cell(70,2,'',0,1);
-    $pdf->Cell(114,2,'',0,0);
+
+$pdf->Cell(39,-5,'',0,1);
+$pdf->Cell(48,6,'Form 1',1,0);
+$pdf->Cell(48,6,'Form 2',1,0);
+$pdf->Cell(48,6,'Form 3',1,0);
+$pdf->Cell(48,6,'Form 4',1,1);
+$pdf->SetFont('Arial','','6');
+$pdf->Cell(8,6,'Term',1,0);
+$pdf->Cell(10,6,'pos',1,0);
+$pdf->Cell(10,6,'Out of',1,0);
+$pdf->Cell(12,6,'MPTS',1,0);
+$pdf->Cell(8,6,'grade',1,0);
+$pdf->Cell(8,6,'Term',1,0);
+$pdf->Cell(10,6,'pos',1,0);
+$pdf->Cell(10,6,'Out of',1,0);
+$pdf->Cell(12,6,'MPTS',1,0);
+$pdf->Cell(8,6,'grade',1,0);
+$pdf->Cell(8,6,'Term',1,0);
+$pdf->Cell(10,6,'pos',1,0);
+$pdf->Cell(10,6,'Out of',1,0);
+$pdf->Cell(12,6,'MPTS',1,0);
+$pdf->Cell(8,6,'grade',1,0);
+$pdf->Cell(8,6,'Term',1,0);
+$pdf->Cell(10,6,'pos',1,0);
+$pdf->Cell(10,6,'Out of',1,0);
+$pdf->Cell(12,6,'MPTS',1,0);
+$pdf->Cell(8,6,'grade',1,1);
+$pdf->Cell(8,6,'1',1,0);
+$pdf->Cell(10,6,$f1t1r,1,0);
+$pdf->Cell(10,6,$f1t1t,1,0);
+$pdf->Cell(12,6,$f1t1p,1,0);
+$pdf->Cell(8,6,$f1t1g,1,0);
+$pdf->Cell(8,6,'1',1,0);
+$pdf->Cell(10,6,$f2t1r,1,0);
+$pdf->Cell(10,6,$f2t1t,1,0);
+$pdf->Cell(12,6,$f2t1p,1,0);
+$pdf->Cell(8,6,$f2t1g,1,0);
+$pdf->Cell(8,6,'1',1,0);
+$pdf->Cell(10,6,$f3t1r,1,0);
+$pdf->Cell(10,6,$f3t1t,1,0);
+$pdf->Cell(12,6,$f3t1p,1,0);
+$pdf->Cell(8,6,$f3t1g,1,0);
+$pdf->Cell(8,6,'1',1,0);
+$pdf->Cell(10,6,$f4t1r,1,0);
+$pdf->Cell(10,6,$f4t1t,1,0);
+$pdf->Cell(12,6,$f4t1p,1,0);
+$pdf->Cell(8,6,$f4t1g,1,1);
+$pdf->Cell(8,6,'2',1,0);
+$pdf->Cell(10,6,$f1t2r,1,0);
+$pdf->Cell(10,6,$f1t2t,1,0);
+$pdf->Cell(12,6,$f1t2p,1,0);
+$pdf->Cell(8,6,$f1t2g,1,0);
+$pdf->Cell(8,6,'2',1,0);
+$pdf->Cell(10,6,$f2t2r,1,0);
+$pdf->Cell(10,6,$f2t2t,1,0);
+$pdf->Cell(12,6,$f2t2p,1,0);
+$pdf->Cell(8,6,$f2t2g,1,0);
+$pdf->Cell(8,6,'2',1,0);
+$pdf->Cell(10,6,$f3t2r,1,0);
+$pdf->Cell(10,6,$f3t2t,1,0);
+$pdf->Cell(12,6,$f3t2p,1,0);
+$pdf->Cell(8,6,$f3t2g,1,0);
+$pdf->Cell(8,6,'2',1,0);
+$pdf->Cell(10,6,$f4t2r,1,0);
+$pdf->Cell(10,6,$f4t2t,1,0);
+$pdf->Cell(12,6,$f4t2p,1,0);
+$pdf->Cell(8,6,$f4t2g,1,1);
+$pdf->Cell(8,6,'3',1,0);
+$pdf->Cell(10,6,$f1t3r,1,0);
+$pdf->Cell(10,6,$f1t3t,1,0);
+$pdf->Cell(12,6,$f1t3p,1,0);
+$pdf->Cell(8,6,$f1t3g,1,0);
+$pdf->Cell(8,6,'3',1,0);
+$pdf->Cell(10,6,$f2t3r,1,0);
+$pdf->Cell(10,6,$f2t3t,1,0);
+$pdf->Cell(12,6,$f2t3p,1,0);
+$pdf->Cell(8,6,$f2t3g,1,0);
+$pdf->Cell(8,6,'3',1,0);
+$pdf->Cell(10,6,$f3t3r,1,0);
+$pdf->Cell(10,6,$f3t3t,1,0);
+$pdf->Cell(12,6,$f3t3p,1,0);
+$pdf->Cell(8,6,$f3t3g,1,0);
+$pdf->Cell(8,6,'3',1,0);
+$pdf->Cell(10,6,$f4t3r,1,0);
+$pdf->Cell(10,6,$f4t3t,1,0);
+$pdf->Cell(12,6,$f4t3p,1,0);
+$pdf->Cell(8,6,$f4t3g,1,1);
+$pdf->Cell(113,2,'',0,0);
+$pdf->Cell(70,2,'',0,1);
+$pdf->Cell(114,2,'',0,0);
 
 
 //validating deviation input
 if($f1t1p==0){
-$f1t1p=0;
+    $f1t1p=0;
 }else{
-$f1t1p=$f1t1p;  
+    $f1t1p=$f1t1p;
 }
 
 if($f1t2p==0){
-$f1t2p=0;
+    $f1t2p=0;
 }else{
-$f1t2p=$f1t2p;  
+    $f1t2p=$f1t2p;
 }
 
 if($f1t3p==0){
-$f1t3p=0;
+    $f1t3p=0;
 }else{
-$f1t3p=$f1t3p;  
+    $f1t3p=$f1t3p;
 }
 
 if($f2t1p==0){
-$f2t1p=0;
+    $f2t1p=0;
 }else{
-$f2t1p=$f2t1p;  
+    $f2t1p=$f2t1p;
 }
 
 if($f2t2p==0){
-$f2t2p=0;
+    $f2t2p=0;
 }else{
-$f2t2p=$f2t2p;  
+    $f2t2p=$f2t2p;
 }
 
 if($f2t3p==0){
-$f2t3p=0;
+    $f2t3p=0;
 }else{
-$f2t3p=$f2t3p;  
+    $f2t3p=$f2t3p;
 }
 
 if($f3t1p==0){
-$f3t1p=0;
+    $f3t1p=0;
 }else{
-$f3t1p=$f3t1p;  
+    $f3t1p=$f3t1p;
 }
 
 if($f3t2p==0){
-$f3t2p=0;
+    $f3t2p=0;
 }else{
-$f3t2p=$f3t2p;  
+    $f3t2p=$f3t2p;
 }
 
 if($f3t3p==0){
-$f3t3p=0;
+    $f3t3p=0;
 }else{
-$f3t3p=$f3t3p;  
+    $f3t3p=$f3t3p;
 }
 
 if($f4t1p==0){
-$f4t1p=0;
+    $f4t1p=0;
 }else{
-$f4t1p=$f4t1p;  
+    $f4t1p=$f4t1p;
 }
 
 if($f4t2p==0){
-$f4t2p=0;
+    $f4t2p=0;
 }else{
-$f4t2p=$f4t2p;  
+    $f4t2p=$f4t2p;
 }
 
 if($f4t3p==0){
-$f4t3p=0;
+    $f4t3p=0;
 }else{
-$f4t3p=$f4t3p;  
+    $f4t3p=$f4t3p;
 }
 
 //principal's comment
@@ -929,7 +937,7 @@ function principalComment($grade){
             break;
         default:
             $comment="not a good perfomance";
-            break;                                            
+            break;
     }
     return $comment;
 }
@@ -972,219 +980,219 @@ function teachersComment($grade){
             break;
         default:
             $comment="not a good perfomance";
-            break;                                            
+            break;
     }
     return $comment;
 }
 
 //validating deviation input
-    
-     if(($result_class[0] == 1) && ($year_term[10]==1))
-     {
 
-        $previous_mean = 0;
-        $current_mean = $f1t1p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f1t1g);
-        $teacherC=teachersComment($f1t1g);
-     }
+if(($result_class[0] == 1) && ($year_term[10]==1))
+{
 
-     if(($result_class[0] == 1) && ($year_term[10]==2))
-     {
-        $previous_mean = $f1t1p;
-        $current_mean = $f1t2p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f1t2g);
-        $teacherC=teachersComment($f1t2g);
-     }
+    $previous_mean = 0;
+    $current_mean = $f1t1p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f1t1g);
+    $teacherC=teachersComment($f1t1g);
+}
 
-     if(($result_class[0] == 1) && ($year_term[10]==3))
-     {
-        $previous_mean = $f1t2p;
-        $current_mean = $f1t3p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f1t3g);
-        $teacherC=teachersComment($f1t3g);
-     }
+if(($result_class[0] == 1) && ($year_term[10]==2))
+{
+    $previous_mean = $f1t1p;
+    $current_mean = $f1t2p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f1t2g);
+    $teacherC=teachersComment($f1t2g);
+}
 
-
-     if(($result_class[0] == 2) && ($year_term[10]==1))
-     {
-        $previous_mean = $f1t3p;
-        $current_mean = $f2t1p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f2t1g);
-        $teacherC=teachersComment($f2t1g);
-     }
-
-     if(($result_class[0] == 2) && ($year_term[10]==2))
-     {
-        $previous_mean = $f2t1p;
-        $current_mean = $f2t2p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f2t2g);
-        $teacherC=teachersComment($f2t2g);
-     }
-
-     if(($result_class[0] == 2) && ($year_term[10]==3))
-     {
-        $previous_mean = $f2t2p;
-        $current_mean = $f2t3p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f2t3g);
-        $teacherC=teachersComment($f2t3g);
-     }
-
-     if(($result_class[0] == 3) && ($year_term[10]==1))
-     {
-        $previous_mean = $f2t3p;
-        $current_mean = $f3t1p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f3t1g);
-        $teacherC=teachersComment($f3t1g);
-     }
-
-     if(($result_class[0] == 3) && ($year_term[10]==2))
-     {
-        $previous_mean = $f3t1p;
-        $current_mean = $f3t2p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f3t2g);
-        $teacherC=teachersComment($f3t2g);
-     }
-
-     if(($result_class[0] == 3) && ($year_term[10]==3))
-     {
-        $previous_mean = $f3t2p;
-        $current_mean = $f3t3p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f3t3g);
-        $teacherC=teachersComment($f3t3g);
-     }
-
-     if(($result_class[0] == 4) && ($year_term[10]==1))
-     {
-        $previous_mean = $f3t3p;
-        $current_mean = $f4t1p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f4t1g);
-        $teacherC=teachersComment($f4t1g);
-     }
-
-     if(($result_class[0] == 4) && ($year_term[10]==2))
-     {
-        $previous_mean = $f4t1p;
-        $current_mean = $f4t2p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f4t2g);
-        $teacherC=teachersComment($f4t2g);
-     }
-
-     if(($result_class[0] == 4) && ($year_term[10]==3))
-     {
-        $previous_mean = $f4t2p;
-        $current_mean = $f4t3p;
-        $deviation = $current_mean - $previous_mean;
-        $principalC=principalComment($f4t3g);
-        $teacherC=teachersComment($f4t3g);
-     }
-    $pdf->SetFont('Arial','','8');
-    $pdf->Cell(26,6,'Previous mean',1,0);
-    $pdf->Cell(26,6,'Current mean',1,0);
-    $pdf->Cell(26,6,'Deviation',1,1);
-    $pdf->Cell(114,6,'',0,0);
-    $pdf->Cell(26,6,$previous_mean,1,0);
-    $pdf->Cell(26,6,$current_mean,1,0);
-    $pdf->Cell(26,6,$deviation,1,1);
-    $pdf->Cell(114,6,'',0,1);
-    $pdf->Cell(114,6,'',0,0);
-
-    $pdf->Cell(7,6,'Grd',1,0);
-    $pdf->Cell(6,6,'A',1,0);
-    $pdf->Cell(6,6,'A-',1,0);
-    $pdf->Cell(6,6,'B+',1,0);
-    $pdf->Cell(6,6,'B',1,0);
-    $pdf->Cell(6,6,'B-',1,0);
-    $pdf->Cell(6,6,'C+',1,0);
-    $pdf->Cell(6,6,'C',1,0);
-    $pdf->Cell(6,6,'C-',1,0);
-    $pdf->Cell(6,6,'D+',1,0);
-    $pdf->Cell(6,6,'D',1,0);
-    $pdf->Cell(6,6,'D-',1,0);
-    $pdf->Cell(5,6,'E',1,1);
-    
-    $pdf->Cell(114,6,'',0,0);
-
-    
-    $pdf->Cell(7,6,'pts',1,0);
-    $pdf->Cell(6,6,'12',1,0);
-    $pdf->Cell(6,6,'11',1,0);
-    $pdf->Cell(6,6,'10',1,0);
-    $pdf->Cell(6,6,'9',1,0);
-    $pdf->Cell(6,6,'8',1,0);
-    $pdf->Cell(6,6,'7',1,0);
-    $pdf->Cell(6,6,'6',1,0);
-    $pdf->Cell(6,6,'5',1,0);
-    $pdf->Cell(6,6,'4',1,0);
-    $pdf->Cell(6,6,'3',1,0);
-    $pdf->Cell(6,6,'2',1,0);
-    $pdf->Cell(5,6,'1',1,1);
-    
-
-        //get term
-    $where=array("state"=>"In progress");
-    $get_term=$obj->fetch_records("terms",$where);
-
-    foreach($get_term as $row)
-    {
-        $term=$row['term'];
-        $opening_date = $row['opening_date'];
-        $closing_date = $row['closing_date'];
-    }
+if(($result_class[0] == 1) && ($year_term[10]==3))
+{
+    $previous_mean = $f1t2p;
+    $current_mean = $f1t3p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f1t3g);
+    $teacherC=teachersComment($f1t3g);
+}
 
 
-    $pdf->Cell(114,6,'',0,1);
-    $pdf->Cell(114,6,'',0,0);
-    $pdf->SetFont('Arial', '', '9');
-    $pdf->Cell(39,6,'School closed on',1,0);
-    $pdf->SetFont('Arial', 'i', '9');
-    $pdf->Cell(39,6,$closing_date,1,1);
-    $pdf->Cell(114,6,'',0,0);
-    $pdf->SetFont('Arial', '', '9');
-    $pdf->Cell(39,6,'Next term begins on',1,0);
-    $pdf->SetFont('Arial', 'i', '9');
-    $pdf->Cell(39,6,$opening_date,1,1);
+if(($result_class[0] == 2) && ($year_term[10]==1))
+{
+    $previous_mean = $f1t3p;
+    $current_mean = $f2t1p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f2t1g);
+    $teacherC=teachersComment($f2t1g);
+}
 
-    
+if(($result_class[0] == 2) && ($year_term[10]==2))
+{
+    $previous_mean = $f2t1p;
+    $current_mean = $f2t2p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f2t2g);
+    $teacherC=teachersComment($f2t2g);
+}
+
+if(($result_class[0] == 2) && ($year_term[10]==3))
+{
+    $previous_mean = $f2t2p;
+    $current_mean = $f2t3p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f2t3g);
+    $teacherC=teachersComment($f2t3g);
+}
+
+if(($result_class[0] == 3) && ($year_term[10]==1))
+{
+    $previous_mean = $f2t3p;
+    $current_mean = $f3t1p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f3t1g);
+    $teacherC=teachersComment($f3t1g);
+}
+
+if(($result_class[0] == 3) && ($year_term[10]==2))
+{
+    $previous_mean = $f3t1p;
+    $current_mean = $f3t2p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f3t2g);
+    $teacherC=teachersComment($f3t2g);
+}
+
+if(($result_class[0] == 3) && ($year_term[10]==3))
+{
+    $previous_mean = $f3t2p;
+    $current_mean = $f3t3p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f3t3g);
+    $teacherC=teachersComment($f3t3g);
+}
+
+if(($result_class[0] == 4) && ($year_term[10]==1))
+{
+    $previous_mean = $f3t3p;
+    $current_mean = $f4t1p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f4t1g);
+    $teacherC=teachersComment($f4t1g);
+}
+
+if(($result_class[0] == 4) && ($year_term[10]==2))
+{
+    $previous_mean = $f4t1p;
+    $current_mean = $f4t2p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f4t2g);
+    $teacherC=teachersComment($f4t2g);
+}
+
+if(($result_class[0] == 4) && ($year_term[10]==3))
+{
+    $previous_mean = $f4t2p;
+    $current_mean = $f4t3p;
+    $deviation = $current_mean - $previous_mean;
+    $principalC=principalComment($f4t3g);
+    $teacherC=teachersComment($f4t3g);
+}
+$pdf->SetFont('Arial','','8');
+$pdf->Cell(26,6,'Previous mean',1,0);
+$pdf->Cell(26,6,'Current mean',1,0);
+$pdf->Cell(26,6,'Deviation',1,1);
+$pdf->Cell(114,6,'',0,0);
+$pdf->Cell(26,6,$previous_mean,1,0);
+$pdf->Cell(26,6,$current_mean,1,0);
+$pdf->Cell(26,6,$deviation,1,1);
+$pdf->Cell(114,6,'',0,1);
+$pdf->Cell(114,6,'',0,0);
+
+$pdf->Cell(7,6,'Grd',1,0);
+$pdf->Cell(6,6,'A',1,0);
+$pdf->Cell(6,6,'A-',1,0);
+$pdf->Cell(6,6,'B+',1,0);
+$pdf->Cell(6,6,'B',1,0);
+$pdf->Cell(6,6,'B-',1,0);
+$pdf->Cell(6,6,'C+',1,0);
+$pdf->Cell(6,6,'C',1,0);
+$pdf->Cell(6,6,'C-',1,0);
+$pdf->Cell(6,6,'D+',1,0);
+$pdf->Cell(6,6,'D',1,0);
+$pdf->Cell(6,6,'D-',1,0);
+$pdf->Cell(5,6,'E',1,1);
+
+$pdf->Cell(114,6,'',0,0);
 
 
-    
+$pdf->Cell(7,6,'pts',1,0);
+$pdf->Cell(6,6,'12',1,0);
+$pdf->Cell(6,6,'11',1,0);
+$pdf->Cell(6,6,'10',1,0);
+$pdf->Cell(6,6,'9',1,0);
+$pdf->Cell(6,6,'8',1,0);
+$pdf->Cell(6,6,'7',1,0);
+$pdf->Cell(6,6,'6',1,0);
+$pdf->Cell(6,6,'5',1,0);
+$pdf->Cell(6,6,'4',1,0);
+$pdf->Cell(6,6,'3',1,0);
+$pdf->Cell(6,6,'2',1,0);
+$pdf->Cell(5,6,'1',1,1);
 
 
-    include 'chart.php';
+//get term
+$where=array("state"=>"In progress");
+$get_term=$obj->fetch_records("terms",$where);
 
-   
-   
-    
-    $pdf->Cell(39,7,'',0,1);
-    $pdf->SetFont('Arial','b','9');
-    $pdf->Cell(39,5,"Principal's remarks",0,0);
-    $pdf->Cell(60,4,'',0,0);
-    $pdf->Cell(39,5,"Class teacher's remarks",0,0); //appeded priincipals remarks
-    $pdf->SetX(10);
-    $pdf->SetFont('Arial','I','8');
-    $pdf->Cell(95,16,$principalC,1,0);
-    $pdf->SetX(109);
-    $pdf->SetFont('Arial','I','8');
-    $pdf->Cell(93,16,$teacherC,1,0);
-    $pdf->Cell(1,25,'',0,1);
-    $pdf->SetX(10);
-    $pdf->Image("functions/fpdf/principal.png",37,270,20,6);
-    $pdf->Cell(10,1,"Principal's signature......................",0,0);
-    $pdf->SetX(109);
-    $pdf->Cell(200,1,"Date & stamp...............................................................................................",0,0);
+foreach($get_term as $row)
+{
+    $term=$row['term'];
+    $opening_date = $row['opening_date'];
+    $closing_date = $row['closing_date'];
+}
 
-     
+
+$pdf->Cell(114,6,'',0,1);
+$pdf->Cell(114,6,'',0,0);
+$pdf->SetFont('Arial', '', '9');
+$pdf->Cell(39,6,'School closed on',1,0);
+$pdf->SetFont('Arial', 'i', '9');
+$pdf->Cell(39,6,$closing_date,1,1);
+$pdf->Cell(114,6,'',0,0);
+$pdf->SetFont('Arial', '', '9');
+$pdf->Cell(39,6,'Next term begins on',1,0);
+$pdf->SetFont('Arial', 'i', '9');
+$pdf->Cell(39,6,$opening_date,1,1);
+
+
+
+
+
+
+
+include 'chart.php';
+
+
+
+
+$pdf->Cell(39,7,'',0,1);
+$pdf->SetFont('Arial','b','9');
+$pdf->Cell(39,5,"Principal's remarks",0,0);
+$pdf->Cell(60,4,'',0,0);
+$pdf->Cell(39,5,"Class teacher's remarks",0,0); //appeded priincipals remarks
+$pdf->SetX(10);
+$pdf->SetFont('Arial','I','8');
+$pdf->Cell(95,16,$principalC,1,0);
+$pdf->SetX(109);
+$pdf->SetFont('Arial','I','8');
+$pdf->Cell(93,16,$teacherC,1,0);
+$pdf->Cell(1,25,'',0,1);
+$pdf->SetX(10);
+$pdf->Image("functions/fpdf/principal.png",37,270,20,6);
+$pdf->Cell(10,1,"Principal's signature......................",0,0);
+$pdf->SetX(109);
+$pdf->Cell(200,1,"Date & stamp...............................................................................................",0,0);
+
+
 
 
 

@@ -238,6 +238,7 @@ if($_SESSION['account'])
 
 
                                               $data = array(
+
                                                   "names" => $names[$i],
                                                   "admission" => $admission[$i],
                                                   "class" => $class,
@@ -259,7 +260,6 @@ if($_SESSION['account'])
                                                   $success = "Exam results for form $class in $period have been uploaded successfully";
 
                                               }
-
                                           }
                                       }
                                    }

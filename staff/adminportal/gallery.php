@@ -23,9 +23,9 @@ $num = mysqli_num_rows($result);
 if(isset($_POST['save']))
 {
  $c = count($_FILES['image']['name']);
- if($num < 5)
+ if($num < 205)
  {
- if($c < 6)
+ if($c < 85)
  {
   for($i=0; $i<$c; $i++)
   {
@@ -35,7 +35,7 @@ if(isset($_POST['save']))
    $insert = $obj->insert_record("gallery",$data);
    if($insert)
    {
-   	move_uploaded_file($_FILES['image']['tmp_name'][$i], "../../images/" .$img);
+   	move_uploaded_file($_FILES['image']['tmp_name'][$i], "../../gallery/" .$img);
     $success = "Uploaded";
    }
    else
@@ -46,7 +46,7 @@ if(isset($_POST['save']))
  }
  else
  {
- 	$error = "Upload Only 5 images";
+ 	$error = "Upload Only 205 images";
  }
  }
  else
@@ -63,7 +63,7 @@ if(isset($_POST['save']))
 		<meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Adding new Sliding Photos</title>
+		<title>Add Gallery Images</title>
 
 		<!-- CSS -->        
         
@@ -94,7 +94,7 @@ if(isset($_POST['save']))
                            ?>
 	  <form  action="<?php echo htmlentities($_SERVER['PHP_SELF'])?>" method="post" enctype="multipart/form-data">
 	     <div class="form-group">
-		    <label for="exampleInputFile">Upload Photo (You can upload up to 5 images at a time)</label>
+		    <label for="exampleInputFile">Upload Images (You can upload more than 10 images at a time)</label>
 		    <input type="file" name="image[]" id="exampleInputFile" multiple required>
 		    
 		  </div>

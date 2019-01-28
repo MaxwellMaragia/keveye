@@ -161,6 +161,7 @@ if(isset($_POST['login']))
                                         <button id="contact_send_btn" type="submit" class="contact_send_btn trans_200" name="login">Login</button>
                                     </form>
                                 </div>
+                                <a href="resetpass.php">Forgot your password?</a>
                             </div>
                         </div>
                     </div>

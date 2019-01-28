@@ -119,20 +119,12 @@
                             <a href="event.php">Add New Event</a>
                         </li>
                         <li>
-                            <a href="notice.php">Add New Notice</a>
-                        </li>
-                        <li>
                             <a href="gallery.php">Add Gallery Images</a>
                         </li>
                         <li>
                             <a href="carousel.php">Add Sliding Images</a>
                         </li>
-                        <li>
-                            <a href="sendsms.php">Send Message</a>
-                        </li>
-                        <li>
-                            <a href="addArticle.php">Publish New Article</a>
-                        </li>
+
                     </ul>
                 </li>
 
