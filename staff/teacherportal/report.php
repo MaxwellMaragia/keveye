@@ -11,6 +11,7 @@ if(!$_SESSION['term'])
 }
 require('functions/fpdf/fpdf.php');
 require('functions/actions.php');
+require('linegraph.php');
 
 $obj=new DataOperations();
 $admission=$_SESSION['student-result'];
@@ -96,7 +97,24 @@ foreach($fetch_total as $row)
 
 
 $pdf = new FPDF('P','mm','A4');
+$pdf = new PDF_LineGraph();
+
+// $pdf->SetFont('Arial','',8);
+
+// $data = array(
+//     'Group' => array(
+//         'F1T1' => 10,
+//         'F1T2' => 8
+        
+//     )
+// );
+// $colors = array(
+//     'Group' => array(114,171,237),
+    
+// );
+
 $pdf->AddPage();
+
 
 //set font to arial,bold,14pt
 $pdf->SetFont('Arial','B','12');
@@ -425,6 +443,30 @@ if($fetch_total)
         $f4t3g = $row['grade'];
     }
 
+$pdf->SetFont('Arial','',8);
+
+$data = array(
+    'Group' => array(
+        'F1T1' => $f1t1m,
+        'F1T2' => $f1t2m,
+        'F1T3' => $f1t3m,
+        'F2T1' => $f2t1m,
+        'F2T2' => $f2t2m,
+        'F2T3' => $f2t3m,
+        'F3T1' => $f3t1m,
+        'F3T2' => $f3t2m,
+        'F3T3' => $f3t3m,
+        'F4T1' => $f4t1m,
+        'F4T2' => $f4t2m,
+        'F4T3' => $f4t3m
+    )
+);
+$colors = array(
+    'Group' => array(0, 0, 0)
+    
+);
+
+
 
 
 
@@ -559,14 +601,13 @@ if($fetch_total)
 
 
 
+//
+  
+$pdf->LineGraph(150,48,$data,'VHdB',$colors,12,6);
 
-    $pdf->Cell(39,6,'Fees arrears Ksh',1,0);
-    $pdf->Cell(39,6,$arreas,1,1);
-    $pdf->Cell(39,6,'Next term fees Ksh',1,0);
-    $pdf->Cell(39,6,$fees,1,1);
-    $pdf->Cell(39,6,'Total Ksh',1,0);
-    $pdf->Cell(39,6,$total_balance,1,1);
-    $pdf->Cell(39,6,'',0,1);
+
+    //
+    $pdf->Cell(39,38,'',0,1);
     $pdf->SetFont('Arial','b','9');
     $pdf->Cell(39,5,'Class teacher remarks',0,0);
     $pdf->Cell(60,10,'',0,0);
@@ -574,8 +615,8 @@ if($fetch_total)
     $pdf->Cell(93,40,'',1,0);
     $pdf->Cell(6,10,'',0,0);
     $pdf->Cell(93,40,'',1,1);
-    $pdf->Cell(20,6,'',0,1);
-    $pdf->Cell(28,5,'School closed on',0,0);
+    $pdf->Cell(20,68,'',0,1);
+    $pdf->Cell(38,5,'School closed on',0,0);
     $pdf->SetFont('Arial','i','9');
     $pdf->Cell(20,5,$closing_date,0,0);
     $pdf->SetFont('Arial','b','9');

@@ -67,10 +67,21 @@
                                     <?php $events=display('news_events','5') ?>
                                     <?php while($disp_event=mysqli_fetch_array($events)): ?>
                                         <div class="accordion_container">
-                                            <div class="accordion d-flex flex-row align-items-center"> <Phasell></Phasell><?php echo $disp_event['title'].','.'&nbsp'.$disp_event['time_date'] ?></div>
+                                            <div class="accordion d-flex flex-row align-items-center"> <Phasell></Phasell><?php 
+                                            $status = $disp_event['status'];
+                                            if($status==null)
+                                            {
+                                            echo $disp_event['title'].','.'&nbsp'.$disp_event['time_date'];
+                                            }
+                                            else
+                                            {
+                                              echo $disp_event['title'].','.'&nbsp <del style="color:red;">'.$disp_event['time_date'].'</del> &nbsp postpone to '.$disp_event['new_date'];
+                                            }
+
+                                             ?></div>
                                             <div class="accordion_panel">
                                                 <p style="text-overflow:ellipsis;word-wrap:break-word;overflow:hidden;max-height:auto;line-height:1.8em;"><?php echo $disp_event['details']?></p>
-                                                <img style="width: 100px; height: 80px;" class="card-img-top" src="<?php echo 'admin/images/'.$disp_event['image'] ?>" alt="machakos high school">
+                                                <img style="width: 100px; height: 80px;" class="card-img-top" src="<?php echo 'event_img/'.$disp_event['image'] ?>" alt="Friends ">
                                             </div>
                                         </div>
                                     <?php endwhile; ?>

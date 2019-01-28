@@ -50,7 +50,7 @@
                 <!-- Popular Course Item -->
                 <div class="col-lg-4 course_box">
                     <div class="card">
-                        <img class="card-img-top" src="<?php echo 'images/'.$disp_pics['image'] ?>" alt="https://unsplash.com/@kellybrito">
+                        <img class="card-img-top" src="<?php echo 'gallery/'.$disp_pics['image'] ?>" alt="https://unsplash.com/@kellybrito">
                     </div>
                 </div>
                 <?php endwhile; ?>
@@ -72,7 +72,7 @@
                                 <?php while($disp_e_pics=mysqli_fetch_array($extra_pics)): ?>
                                 <div class="col-lg-4 course_box">
                                     <div class="card">
-                                        <img class="card-img-top" src="<?php echo 'images/'.$disp_e_pics['image'] ?>" alt="https://unsplash.com/@kimberlyfarmer">
+                                        <img class="card-img-top" src="<?php echo 'gallery/'.$disp_e_pics['image'] ?>" alt="https://unsplash.com/@kimberlyfarmer">
 
                                     </div>
                                 </div>

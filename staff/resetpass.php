@@ -6,7 +6,7 @@ include 'reset.php';
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KIPASI</title>
+    <title>KEVEYESCHOOL</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.css"/>
     <link rel="stylesheet" href="assets/css/layout.css"/>
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
@@ -26,7 +26,7 @@ include 'reset.php';
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">KIPASI</a>
+            <a class="navbar-brand" href="#">KEVEYESCHOOL</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->

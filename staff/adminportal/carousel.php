@@ -38,6 +38,18 @@ include 'functions/addcarousel.php';
 	  <div class="panel-heading">Upload New Slidings Photos
       <a href="delete_carousel.php" style="float: right; margin-top: -8px;"><button type="button" class="btn btn-primary bt-sm">Delete Images</button></a>
 	  </div>
+    <?php
+    $sql = "SELECT * FROM carousel_pics";
+    $res = mysqli_query($obj->con,$sql);
+    $count = mysqli_num_rows($res);
+    if($count==3)
+    {
+     echo "<div class='alert alert-danger' style='margin-top:10px;'>Oops!, You can't add new Sliding image right now because there are maximum number of images already, to add new image click delete Images button on the right top to delete old images first!</div>";
+    }
+    else
+    {
+
+    ?>
 	  <div class="panel-body">
 
 	 					 <?php
@@ -68,9 +80,10 @@ include 'functions/addcarousel.php';
 
 	    
 	  	</div>
+      <?php
+      }
+    ?>
 
-	  
-	  
 		</div>
 
 
