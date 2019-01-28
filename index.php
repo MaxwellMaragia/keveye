@@ -71,16 +71,27 @@
             <div class="row">
 
                 <div class="col-lg-12 service_item text-left d-flex flex-column align-items-start justify-content-start">
-<<<<<<< HEAD
-                    <p>The school started in a modest way in 1915 as a boys Primary School at the current Machakos Girls grounds. It was known as African Government School. It was not until 1939 that it changed into a boys Secondary School. In 1946 the first batch of girls were admitted making it a mixed school. It used to take students up to Form 2. The Principal of the school then was called Mr. Martin making the school to be referred to by the locals as “KwaMatingi” a corruption of for “At Martins”. Later the need to separate the girls from the boys arose and in 1950 the boys were relocated to the present site of Machakos School. It admitted African students only and hence the name “Government African Boys School”.
+
+                    <p>HISTORICAL BACKGROUND
+                      <span style="color: #8B4513;">Friends School Keveye Girls’ was established as a mixed secondary school in 1974 under the headship of the then Keveye Primary School head teacher Mr. Mathias Iravonga under the sponsorship of the Quakers Church.
+                      </span>
+
+                        TRANSFORMATION AND DEVELOPMENT
+                        <span style="color:#8B4513;">The school began from scratch with no physical facilities of its own. In the initial stages, it shared a tuition block with Keveye Primary School which was a host to Form 1&2 classes.
+
+                         The transformation process began in 1991, when the school converted into a Girls school with the phasing out of boys who were relocated to neighboring schools namely Chavakali, Mbale, Wangulu and Chandumba secondary schools. Due to focused leadership, government and community support, the young institution grew in leaps and bounds to its present status.
+
+                         Today, the school stands on an 8-acre piece of land with a total population of 1580. It is officially registered as an Extra County 7 streamed girls’ school with enrolment of students from all over the Country. Like any other Public School, its mandate is to offer the 8.4.4 school curriculum of Education and any other planned and/or informal activities. The school is managed by B.O.M and assisted by the PA whose main objective is to raise funds for the schools’ development programmes...
+                        </span>
+
                         <br>
-                       <a href="about.php">Read more..</a>
+                        <a style="background-color: #8B4513; color:white" class="btn " href="about.php">read more...</a>
                     </p>
-                    
-=======
-                    <p>The school started in a modest way in 1915 as a boys Primary School at the current Machakos Girls grounds. It was known as African Government School. It was not until 1939 that it changed into a boys Secondary School. In 1946 the first batch of girls were admitted making it a mixed school. It used to take students up to Form 2. The Principal of the school then was called Mr. Martin making the school to be referred to by the locals as “KwaMatingi” a corruption of for “At Martins”. Later the need to separate the girls from the boys arose and in 1950 the boys were relocated to the present site of Machakos School. It admitted African students only and hence the name “Government African Boys School”.<br><a href="about.php" >Read More</a></p>
-                    <div class="button button_color_1 text-center trans_20 hidden"><a href="about.php" >Read More</a></div>
->>>>>>> c661e69ab8204d07e1952d8f950ac88dac39e5b8
+
+
+                    <p style="color:white" >The school started in a modest way in 1915 as a boys Primary School at the current Machakos Girls grounds. It was known as African Government School. It was not until 1939 that it need to separate the girls from the boys arose and in 1950 the boys were relocated to the present site of Machakos School. It admitted African students only and hence the name “Government African Boys School”.</p>
+
+
                 </div>
 
             </div>

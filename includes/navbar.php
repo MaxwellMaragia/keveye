@@ -68,9 +68,8 @@
                 <li class="main_nav_item ">
                     <a style="font-size: 17pt;color:black;" class=" dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Portal</a>
                     <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
-                        <a style="font-size: 17pt;color:black;" class="dropdown-item blue-text" href="student/student_login.php">Student login</a>
-                        <a style="font-size: 17pt;color:black;" class="dropdown-item blue-text" href="staff/index.php">Staff login</a>
-                        <a style="font-size: 17pt;color:black;" class="dropdown-item blue-text" href="portal/teacher_login.php">Teacher's portal</a>
+                        <a style="font-size: 17pt;color:black;" class="dropdown-item blue-text" href="student/student_login.php">Student</a>
+                        <a style="font-size: 17pt;color:black;" class="dropdown-item blue-text" href="staff/index.php">Staff</a>
                     </div>
                 </li>
             </ul>
