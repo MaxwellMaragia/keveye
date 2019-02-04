@@ -58,26 +58,5 @@ else
 }
 
 }
-if(isset($_POST['update']))
-{
-	$title = $obj->con->real_escape_string(htmlentities($_POST['title']));
-	$date = $obj->con->real_escape_string(htmlentities($_POST['date']));
-	$desc = $obj->con->real_escape_string(htmlentities($_POST['desc']));
-
-	$data = array(
-          "title"=>$title,
-          "time_date"=>$date,
-          "details"=>$desc   
-	);
-	$where = array("title"=>$title);
-	if($obj->update_record("news_events",$where,$data))
-	{
-     $success = "Edited successfully";
-	}
-	else
-	{
-		$error = mysqli_error($obj->con);
-	}
-}
 
 ?>

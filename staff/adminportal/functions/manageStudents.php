@@ -15,12 +15,12 @@ if(isset($_POST['save']))
     $names=$obj->con->real_escape_string(htmlspecialchars($_POST['names']));
     $admission=$obj->con->real_escape_string(htmlspecialchars($_POST['admission']));
     $class=$obj->con->real_escape_string(htmlspecialchars($_POST['class']));
-    $fname=$obj->con->real_escape_string(htmlspecialchars($_POST['fname']));
-    $mname=$obj->con->real_escape_string(htmlspecialchars($_POST['mname']));
-    $fmobile=$obj->con->real_escape_string(htmlspecialchars($_POST['fmobile']));
-    $mmobile=$obj->con->real_escape_string(htmlspecialchars($_POST['mmobile']));
-    $category="day";
-    $gender = $obj->con->real_escape_string(htmlentities($_POST['gender']));
+    // $fname=$obj->con->real_escape_string(htmlspecialchars($_POST['fname']));
+    // $mname=$obj->con->real_escape_string(htmlspecialchars($_POST['mname']));
+    // $fmobile=$obj->con->real_escape_string(htmlspecialchars($_POST['fmobile']));
+    $mobile=$obj->con->real_escape_string(htmlspecialchars($_POST['mobile']));
+    $category="boarding";
+    $house = $obj->con->real_escape_string(htmlentities($_POST['house']));
     $kcpe=$obj->con->real_escape_string(htmlspecialchars($_POST['kcpe']));
 
 
@@ -33,14 +33,14 @@ if(isset($_POST['save']))
     {
         $error="Only characters and white string allowed in name fields";
     }
-    else if(!empty($fname) && (!$obj->validate_string($fname)))
-    {
-        $error="Only characters and whitespace allowed in fathers names";
-    }
-    else if(!empty($mname) && (!$obj->validate_string($mname)))
-    {
-        $error="Only characters and whitespace allowed in mothers names";
-    }
+    // else if(!empty($fname) && (!$obj->validate_string($fname)))
+    // {
+    //     $error="Only characters and whitespace allowed in fathers names";
+    // }
+    // else if(!empty($mname) && (!$obj->validate_string($mname)))
+    // {
+    //     $error="Only characters and whitespace allowed in mothers names";
+    // }
     else if($obj->validate_string($class) || $class=="Select class")
     {
         $error="Please select valid class";
@@ -54,9 +54,9 @@ if(isset($_POST['save']))
     {
         $error="KCPE marks must be number only";
     }
-    else if($gender == "Select gender")
+    else if($house == "Select House")
     {
-        $error="Please select gender";
+        $error="Please select house";
     }
 
     else
@@ -98,17 +98,14 @@ if(isset($_POST['save']))
 
                 "AdmissionNumber"=>$admission,
                 "names"=>$names,
-                "gender"=>$gender,
+                "house"=>$house,
                 "class"=>$class,
                 "stream"=>substr($class, 1),
                 "form"=>$class[0],
                 "category"=>$category,
                 "account"=>"active",
                 "password"=>$password,
-                "fathersNames"=>$fname,
-                "mothersNames"=>$mname,
-                "fathersmobile"=>$fmobile,
-                "mothersmobile"=>$mmobile,
+                "mobile"=>$mobile,
                 "fee_owed"=>$fee_balance,
                 "kcpe"=>$kcpe,
                 "fee_paid"=>0
@@ -153,10 +150,10 @@ if(isset($_POST['update']))
     $stu_admission=$obj->con->real_escape_string(htmlspecialchars($_POST['admission']));
     $stu_class=$obj->con->real_escape_string(htmlspecialchars($_POST['class']));
     $category=$obj->con->real_escape_string(htmlspecialchars($_POST['category']));
-    $fname=$obj->con->real_escape_string(htmlspecialchars($_POST['fname']));
-    $mname=$obj->con->real_escape_string(htmlspecialchars($_POST['mname']));
-    $fmobile=$obj->con->real_escape_string(htmlentities($_POST['fmobile']));
-    $mmobile=$obj->con->real_escape_string(htmlentities($_POST['mmobile']));
+    // $fname=$obj->con->real_escape_string(htmlspecialchars($_POST['fname']));
+    // $mname=$obj->con->real_escape_string(htmlspecialchars($_POST['mname']));
+    // $fmobile=$obj->con->real_escape_string(htmlentities($_POST['fmobile']));
+    $mobile=$obj->con->real_escape_string(htmlentities($_POST['mobile']));
 
 
     //form validation
@@ -200,10 +197,10 @@ if(isset($_POST['update']))
             "stream"=>substr($stu_class, 1),
             "form"=>$stu_class[0],
             "category"=>$category,
-            "fathersNames"=>$fname,
-            "mothersNames"=>$mname,
-            "fathersmobile"=>$fmobile,
-            "mothersmobile"=>$mmobile
+            // "fathersNames"=>$fname,
+            // "mothersNames"=>$mname,
+            // "fathersmobile"=>$fmobile,
+            "mobile"=>$mobile
 
         );
 
