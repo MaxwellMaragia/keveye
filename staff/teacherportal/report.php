@@ -31,7 +31,7 @@ foreach($fetch_student as $row)
     $form=$row['form'];
     $category=$row['category'];
     $kcpe = $row['kcpe'];
-    $gender = $row['gender'];
+    $gender = $row['house'];
 }
 
 
@@ -1193,72 +1193,6 @@ $pdf->SetX(109);
 $pdf->Cell(200,1,"Date & stamp...............................................................................................",0,0);
 
 
-<<<<<<< HEAD
-    $pdf->Cell(114,6,'',0,1);
-    $pdf->Cell(114,6,'',0,0);
-    $pdf->SetFont('Arial', '', '9');
-    $pdf->Cell(39,6,'School closed on',1,0);
-    $pdf->SetFont('Arial', 'i', '9');
-    $pdf->Cell(39,6,$closing_date,1,1);
-    $pdf->Cell(114,6,'',0,0);
-    $pdf->SetFont('Arial', '', '9');
-    $pdf->Cell(39,6,'Next term begins on',1,0);
-    $pdf->SetFont('Arial', 'i', '9');
-    $pdf->Cell(39,6,$opening_date,1,1);
-
-// HEAD
-//
-  
-$pdf->LineGraph(150,48,$data,'VHdB',$colors,12,6);
-
-
-    //
-    $pdf->Cell(39,38,'',0,1);
-    $pdf->SetFont('Arial','b','9');
-    $pdf->Cell(39,5,'Class teacher remarks',0,0);
-    $pdf->Cell(60,10,'',0,0);
-    $pdf->Cell(39,5,"Principal's remarks",0,1);
-    $pdf->Cell(93,40,'',1,0);
-    $pdf->Cell(6,10,'',0,0);
-    $pdf->Cell(93,40,'',1,1);
-    $pdf->Cell(20,68,'',0,1);
-    $pdf->Cell(38,5,'School closed on',0,0);
-    $pdf->SetFont('Arial','i','9');
-    $pdf->Cell(20,5,$closing_date,0,0);
-
-    
-
-
-    
-
-
-    include 'chart.php';
-
-   
-   
-    
-    $pdf->Cell(39,7,'',0,1);
- //51396b41331d0af1da5551bcb73ce859a34fc5c2
-    $pdf->SetFont('Arial','b','9');
-    $pdf->Cell(39,5,"Principal's remarks",0,0);
-    $pdf->Cell(60,4,'',0,0);
-    $pdf->Cell(39,5,"Class teacher's remarks",0,0); //appeded priincipals remarks
-    $pdf->SetX(10);
-    $pdf->SetFont('Arial','I','8');
-    $pdf->Cell(95,16,$principalC,1,0);
-    $pdf->SetX(109);
-    $pdf->SetFont('Arial','I','8');
-    $pdf->Cell(93,16,$teacherC,1,0);
-    $pdf->Cell(1,25,'',0,1);
-    $pdf->SetX(10);
-    $pdf->Image("functions/fpdf/principal.png",37,270,20,6);
-    $pdf->Cell(10,1,"Principal's signature......................",0,0);
-    $pdf->SetX(109);
-    $pdf->Cell(200,1,"Date & stamp...............................................................................................",0,0);
-
-     
-=======
->>>>>>> 2d6b745cbea980be5c34886d80f67c48320fc915
 
 
 
