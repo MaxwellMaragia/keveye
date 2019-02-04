@@ -39,13 +39,22 @@
                 <!-- -->
                 <!-- -->
                 <li>
-                    <a href="#"><i class="fa fa-clipboard"></i>Enter exam results<span class="fa arrow"></span></a>
+                    <a href="enterresults.php"><i class="fa fa-clipboard"></i>Enter exam results</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-book"></i>Grading system<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
-                            <a href="enterresults.php">Enter students results</a>
+                            <a href="gradingsystem1.php">Form 1</a>
                         </li>
                         <li>
-                            <a href="gradingsystem.php">Manage grading system</a>
+                            <a href="gradingsystem2.php">Form 2</a>
+                        </li>
+                        <li>
+                            <a href="gradingsystem3.php">Form 3</a>
+                        </li>
+                        <li>
+                            <a href="gradingsystem4.php">Form 4</a>
                         </li>
                     </ul>
                 </li>
