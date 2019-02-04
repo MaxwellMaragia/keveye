@@ -21,6 +21,7 @@ if(!$_SESSION['account']){
 
 </head>
 
+
 <body>
 <!--   navigation plugin-->
 <?php include "plugins/navigation.php" ?>
