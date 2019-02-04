@@ -67,10 +67,11 @@ if(!$_SESSION['admin_login']){
         $admission = $row['AdmissionNumber'];
         $class = $row['class'];
         $category = $row['category'];
-        $fname = $row['fathersNames'];
-        $mname = $row['mothersNames'];
-        $fmobile = $row['fathersmobile'];
-        $mmobile = $row['mothersmobile'];
+        $house = $row['house'];
+        // $fname = $row['fathersNames'];
+        // $mname = $row['mothersNames'];
+        // $fmobile = $row['fathersmobile'];
+        $mobile = $row['mobile'];
         $fees = $row['fee_paid']-$row['fee_owed'];
         $account_status=$row['account'];
         if($account_status == "active")
@@ -107,6 +108,9 @@ if(!$_SESSION['admin_login']){
                                 <li class="list-group-item">
                                     Class - Form <?php echo $class?>
                                 </li>
+                                <li class="list-group-item">
+                                    House - <?php echo $house?>
+                                </li>
                             </ul>
                         </div>
 
@@ -114,9 +118,9 @@ if(!$_SESSION['admin_login']){
                         <div class="col-md-6 pull-left">
                             <ul class="list-group">
                                 <li class="list-group-item active">
-                                    Parents details
+                                    Contact details
                                 </li>
-                                <li class="list-group-item">
+                                <!-- <li class="list-group-item">
                                     Father -
                                     <?php
 
@@ -130,23 +134,15 @@ if(!$_SESSION['admin_login']){
                                     }
 
                                     ?>
-                                </li>
+                                </li> -->
                                 <li class="list-group-item">
-                                    Mother -
+                                    Mobile Number -
                                     <?php
 
-                                    if(empty($fname))
-                                    {
-                                        echo "Not entered";
-                                    }
-                                    else
-                                    {
-                                        echo $mname." ($mmobile)";
-                                    }
-
+                                       echo $mobile;
                                     ?>
-                                </li>
-                                <li class="list-group-item">
+                                </li> 
+                                <!-- <li class="list-group-item">
                                     Fees -
                                     <?php
                                     if($fees<0)
@@ -158,7 +154,7 @@ if(!$_SESSION['admin_login']){
                                         echo "<f style='color:#008000;'>(Cleared) Overpayment ".$fees."</f>";
                                     }
                                     ?>.
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                     </div>
@@ -226,21 +222,21 @@ if(!$_SESSION['admin_login']){
 
                                                     </select>
                                                 </div>
-                                                <div class="form-group">
+                                                <!-- <div class="form-group">
                                                     <label>Father</label>
                                                     <input type="text" class="form-control" name="fname" value="<?=$fname?>" placeholder="Fathers names">
-                                                </div>
-                                                <div class="form-group">
+                                                </div> -->
+                                                <!-- <div class="form-group">
                                                     <label>Mother</label>
                                                     <input type="text" class="form-control" name="mname" value="<?=$mname?>" placeholder="Mothers names">
-                                                </div>
-                                                <div class="form-group">
+                                                </div> -->
+                                                <!-- <div class="form-group">
                                                     <label>Fathers mobile</label>
                                                     <input type="text" class="form-control" name="fmobile" value="<?=$fmobile?>" placeholder="Fathers mobile number">
-                                                </div>
+                                                </div> -->
                                                 <div class="form-group">
-                                                    <label>Mothers mobile</label>
-                                                    <input type="text" class="form-control" name="mmobile" value="<?=$mmobile?>" placeholder="Mothers mobile number">
+                                                    <label>Mobile Phone</label>
+                                                    <input type="text" class="form-control" name="mobile" value="<?=$mmobile?>" placeholder="mobile number">
                                                 </div>
                                                 <div class="form-group">
                                                     <button class="btn btn-primary" name="update" type="submit" >Update</button>

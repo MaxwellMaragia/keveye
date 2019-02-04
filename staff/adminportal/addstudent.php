@@ -53,20 +53,22 @@ else
                                 $obj->successDisplay($success);
                             }
                             ?>
-                            <div class="col-md-6 pull-left">
+                            <div class="col-md-6 col-md-offset-2">
 
                                 <div class="form-group">
                                     <input type="text" placeholder="Full names" class="form-control" name="names" value="<?=$names?>" required>
                                 </div>
                                 <div class="form-group">
-                                    <select class="form-control" name="gender" required="required">
-                                        <option value="">Select gender</option>
-                                        <option>M</option>
-                                        <option>F</option>
-                                    </select>
+                                    <input type="text" placeholder="Admission" class="form-control" name="admission" value="<?=$admission?>" required>
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" placeholder="Admission" class="form-control" name="admission" value="<?=$admission?>" required>
+                                    <select class="form-control" name="house" required="required">
+                                        <option value="">Select House</option>
+                                        <option>Kilimanjaro</option>
+                                        <option>Tsunami</option>
+                                        <option>Sunrise</option>
+                                        <option>New Markerere</option>
+                                    </select>
                                 </div>
                                 <div class="form-group">
                                     <select class="form-control" name="class" required="required">
@@ -88,8 +90,15 @@ else
                                 <div class="form-group">
                                     <input type="number" placeholder="KCPE marks" class="form-control" name="kcpe" value="" required>
                                 </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="mobile" value="<?=$mmobile?>" placeholder="Mobile number" required>
+                                </div>
+                                <div class="form-group">
+                                <button class="btn btn-primary" name="save" type="submit" >Admit student</button>
+                                </div>
+                                
                             </div>
-                            <div class="col-md-6 pull-right">
+                            <!-- <div class="col-md-6 pull-right">
                                 <label>Parent details </label>
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="fname" value="<?=$fname?>" placeholder="Fathers names (Not compulsory)">
@@ -103,10 +112,8 @@ else
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="mmobile" value="<?=$mmobile?>" placeholder="Mothers mobile number (Not compulsory)">
                                 </div>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <button class="btn btn-primary" name="save" type="submit" >Admit student</button>
-                            </div>
+                            </div> -->
+                            
                         </div>
 
                     </form>

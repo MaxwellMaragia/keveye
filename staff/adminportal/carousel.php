@@ -44,7 +44,7 @@ include 'functions/addcarousel.php';
     $count = mysqli_num_rows($res);
     if($count==3)
     {
-     echo "<div class='alert alert-danger' style='margin-top:10px;'>Oops!, You can't add new Sliding image right now because there are maximum number of images already, to add new image click delete Images button on the right top to delete old images first!</div>";
+     echo "<div class='alert alert-danger' style='margin-top:10px;'>Oops!, You can't add more Sliding images right now because there are maximum number of images already, to add new image click delete Images button on the right top to delete old images first!</div>";
     }
     else
     {

@@ -1197,7 +1197,7 @@ function teachersComment($grade){
     $pdf->SetFont('Arial', 'i', '9');
     $pdf->Cell(39,6,$opening_date,1,1);
 
-<<<<<<< HEAD
+// HEAD
 //
   
 $pdf->LineGraph(150,48,$data,'VHdB',$colors,12,6);
@@ -1216,7 +1216,7 @@ $pdf->LineGraph(150,48,$data,'VHdB',$colors,12,6);
     $pdf->Cell(38,5,'School closed on',0,0);
     $pdf->SetFont('Arial','i','9');
     $pdf->Cell(20,5,$closing_date,0,0);
-=======
+
     
 
 
@@ -1229,7 +1229,7 @@ $pdf->LineGraph(150,48,$data,'VHdB',$colors,12,6);
    
     
     $pdf->Cell(39,7,'',0,1);
->>>>>>> 51396b41331d0af1da5551bcb73ce859a34fc5c2
+ //51396b41331d0af1da5551bcb73ce859a34fc5c2
     $pdf->SetFont('Arial','b','9');
     $pdf->Cell(39,5,"Principal's remarks",0,0);
     $pdf->Cell(60,4,'',0,0);
