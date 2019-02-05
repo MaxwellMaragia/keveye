@@ -12,6 +12,7 @@ if(!$_SESSION['term'])
 require('functions/fpdf/fpdf.php');
 require('functions/actions.php');
 
+
 $obj=new DataOperations();
 $admission=$_SESSION['student-result'];
 $year_term=$_SESSION['term'];
@@ -31,7 +32,7 @@ foreach($fetch_student as $row)
     $form=$row['form'];
     $category=$row['category'];
     $kcpe = $row['kcpe'];
-    $gender = $row['gender'];
+    $gender = $row['house'];
 }
 
 
@@ -99,14 +100,16 @@ foreach($fetch_total as $row)
 
 
 $pdf = new FPDF('P','mm','A4');
-$pdf->AddPage();
 
+$pdf->AddPage();
+//the watermark
+include 'opacity.php';
 //set font to arial,bold,14pt
 $pdf->SetFont('Arial','B','12');
 
 //cella(width,height,text,border,endline,[align])
 //LOGO
-$pdf->Image("functions/fpdf/keveye.png",8,2,30,30);
+$pdf->Image("functions/fpdf/keveye.png",8,5,30,32);
 
 
 //headers
@@ -169,14 +172,14 @@ if($fetch_total)
     }
 
     //calculate points
-    $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND period='$year_term'";
+    $sql = "SELECT * FROM `final_result` WHERE admission='$admission' AND period='$year_term' ";
 
     $exe = mysqli_query($obj->con,$sql);
 
-    while($get_total = mysqli_fetch_assoc($exe))
+    while($get_total = mysqli_fetch_array($exe))
     {
-        $tpoints = $get_total['SUM(points)'];
-        $mpoints = $tpoints/$min;
+        $tpoints = $get_total['total_points'];
+        $mpoints = $get_total['average_points'];
     }
 
     $pdf->Rect(10,48,192,6,'D');
@@ -369,12 +372,12 @@ if($fetch_total)
         $f1t1g = $row['grade'];
 
         //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 1 AND term=1";
+        $sql = "SELECT `average points` FROM `final_result` WHERE admission='$admission' AND form = 1 AND term=1";
         $exe = mysqli_query($obj->con,$sql);
         while($get_total = mysqli_fetch_assoc($exe))
         {
-            $tpoints = $get_total['SUM(points)'];
-            $f1t1p = $tpoints/$min;
+           
+            $f1t1p = $get_total['average_points'];
         }
 
         //get form rank
@@ -405,12 +408,12 @@ if($fetch_total)
         $f1t2g = $row['grade'];
 
         //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 1 AND term=2";
+        $sql = "SELECT `average points` FROM `final_result` WHERE admission='$admission' AND form = 1 AND term=2";
         $exe = mysqli_query($obj->con,$sql);
         while($get_total = mysqli_fetch_assoc($exe))
         {
-            $tpoints = $get_total['SUM(points)'];
-            $f1t2p = $tpoints/$min;
+          
+            $f1t2p = $get_total['average_points'];
         }
 
         //get form rank
@@ -440,12 +443,11 @@ if($fetch_total)
         $f1t3g = $row['grade'];
 
         //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 1 AND term=3";
+        $sql = "SELECT `average points` FROM `final_result` WHERE admission='$admission' AND form = 1 AND term=3";
         $exe = mysqli_query($obj->con,$sql);
         while($get_total = mysqli_fetch_assoc($exe))
         {
-            $tpoints = $get_total['SUM(points)'];
-            $f1t3p = $tpoints/$min;
+            $f1t3p = $get_total['average_points'];
         }
 
         //get form rank
@@ -475,12 +477,12 @@ if($fetch_total)
         $f2t1g = $row['grade'];
 
         //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 2 AND term=1";
+         $sql = "SELECT `average points` FROM `final_result` WHERE admission='$admission' AND form = 2 AND term=1";
         $exe = mysqli_query($obj->con,$sql);
         while($get_total = mysqli_fetch_assoc($exe))
         {
-            $tpoints = $get_total['SUM(points)'];
-            $f2t1p = $tpoints/$min;
+            
+            $f2t1p = $get_total['average_points'];
         }
 
         //get form rank
@@ -510,12 +512,12 @@ if($fetch_total)
         $f2t2g = $row['grade'];
 
         //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 2 AND term=2";
+        $sql = "SELECT `average points` FROM `final_result` WHERE admission='$admission' AND form = 2 AND term=2";
         $exe = mysqli_query($obj->con,$sql);
         while($get_total = mysqli_fetch_assoc($exe))
         {
-            $tpoints = $get_total['SUM(points)'];
-            $f2t2p = $tpoints/$min;
+           
+            $f2t2p = $get_total['average_points'];
         }
 
         //get form rank
@@ -545,12 +547,11 @@ if($fetch_total)
         $f2t3g = $row['grade'];
 
         //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 2 AND term=3";
+        $sql = "SELECT `average points` FROM `final_result` WHERE admission='$admission' AND form = 2 AND term=3";
         $exe = mysqli_query($obj->con,$sql);
         while($get_total = mysqli_fetch_assoc($exe))
         {
-            $tpoints = $get_total['SUM(points)'];
-            $f2t3p = $tpoints/$min;
+            $f2t3p = $get_total['average_points'];
         }
 
         //get form rank
@@ -580,12 +581,12 @@ if($fetch_total)
         $f3t1g = $row['grade'];
 
         //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 3 AND term=1";
+        $sql = "SELECT `average_points` FROM `final_result` WHERE admission='$admission' AND form = 3 AND term=1";
         $exe = mysqli_query($obj->con,$sql);
         while($get_total = mysqli_fetch_assoc($exe))
         {
-            $tpoints = $get_total['SUM(points)'];
-            $f3t1p = $tpoints/$min;
+            $f3t1p = $get_total['average_points'];
+            
         }
 
         //get form rank
@@ -616,12 +617,12 @@ if($fetch_total)
         $f3t2g = $row['grade'];
 
         //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 3 AND term=2";
+        $sql = "SELECT `average_points` FROM `final_result` WHERE admission='$admission' AND form = 3 AND term=2";
         $exe = mysqli_query($obj->con,$sql);
         while($get_total = mysqli_fetch_assoc($exe))
         {
-            $tpoints = $get_total['SUM(points)'];
-            $f3t2p = $tpoints/$min;
+            
+            $f3t2p = $get_total['average_points'];
         }
 
         //get form rank
@@ -652,12 +653,12 @@ if($fetch_total)
         $f3t3g = $row['grade'];
 
         //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 3 AND term=3";
+        $sql = "SELECT `average_points` FROM `final_result` WHERE admission='$admission' AND form = 3 AND term=3";
         $exe = mysqli_query($obj->con,$sql);
         while($get_total = mysqli_fetch_assoc($exe))
         {
-            $tpoints = $get_total['SUM(points)'];
-            $f3t3p = $tpoints/$min;
+           
+            $f3t3p = $get_total['average_points'];
         }
 
         //get form rank
@@ -687,12 +688,11 @@ if($fetch_total)
         $f4t1g = $row['grade'];
 
         //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 4 AND term=1";
+        $sql = "SELECT `average_points` FROM `final_result` WHERE admission='$admission' AND form = 4 AND term=1";
         $exe = mysqli_query($obj->con,$sql);
         while($get_total = mysqli_fetch_assoc($exe))
         {
-            $tpoints = $get_total['SUM(points)'];
-            $f4t1p = $tpoints/$min;
+            $f4t1p = $get_total['average_points'];
         }
     }
 
@@ -704,12 +704,11 @@ if($fetch_total)
         $f4t2g = $row['grade'];
 
         //calculate points
-        $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 4 AND term=2";
+        $sql = "SELECT `average_points` FROM `final_result` WHERE admission='$admission' AND form = 4 AND term=2";
         $exe = mysqli_query($obj->con,$sql);
         while($get_total = mysqli_fetch_assoc($exe))
         {
-            $tpoints = $get_total['SUM(points)'];
-            $f4t2p = $tpoints/$min;
+            $f4t2p = $get_total['average_points'];
         }
     }
 
@@ -723,12 +722,11 @@ foreach($fetch as $row)
     $f4t3g = $row['grade'];
 
     //calculate points
-    $sql = "SELECT SUM(points) FROM results WHERE admission='$admission' AND form = 4 AND term=3";
+    $sql = "SELECT `average_points` FROM `final_result` WHERE admission='$admission' AND form = 4 AND term=3";
     $exe = mysqli_query($obj->con,$sql);
     while($get_total = mysqli_fetch_assoc($exe))
     {
-        $tpoints = $get_total['SUM(points)'];
-        $f4t3p = $tpoints/$min;
+        $f4t3p = $get_total['average_points'];
     }
 }
 
@@ -1193,72 +1191,6 @@ $pdf->SetX(109);
 $pdf->Cell(200,1,"Date & stamp...............................................................................................",0,0);
 
 
-<<<<<<< HEAD
-    $pdf->Cell(114,6,'',0,1);
-    $pdf->Cell(114,6,'',0,0);
-    $pdf->SetFont('Arial', '', '9');
-    $pdf->Cell(39,6,'School closed on',1,0);
-    $pdf->SetFont('Arial', 'i', '9');
-    $pdf->Cell(39,6,$closing_date,1,1);
-    $pdf->Cell(114,6,'',0,0);
-    $pdf->SetFont('Arial', '', '9');
-    $pdf->Cell(39,6,'Next term begins on',1,0);
-    $pdf->SetFont('Arial', 'i', '9');
-    $pdf->Cell(39,6,$opening_date,1,1);
-
-// HEAD
-//
-  
-$pdf->LineGraph(150,48,$data,'VHdB',$colors,12,6);
-
-
-    //
-    $pdf->Cell(39,38,'',0,1);
-    $pdf->SetFont('Arial','b','9');
-    $pdf->Cell(39,5,'Class teacher remarks',0,0);
-    $pdf->Cell(60,10,'',0,0);
-    $pdf->Cell(39,5,"Principal's remarks",0,1);
-    $pdf->Cell(93,40,'',1,0);
-    $pdf->Cell(6,10,'',0,0);
-    $pdf->Cell(93,40,'',1,1);
-    $pdf->Cell(20,68,'',0,1);
-    $pdf->Cell(38,5,'School closed on',0,0);
-    $pdf->SetFont('Arial','i','9');
-    $pdf->Cell(20,5,$closing_date,0,0);
-
-    
-
-
-    
-
-
-    include 'chart.php';
-
-   
-   
-    
-    $pdf->Cell(39,7,'',0,1);
- //51396b41331d0af1da5551bcb73ce859a34fc5c2
-    $pdf->SetFont('Arial','b','9');
-    $pdf->Cell(39,5,"Principal's remarks",0,0);
-    $pdf->Cell(60,4,'',0,0);
-    $pdf->Cell(39,5,"Class teacher's remarks",0,0); //appeded priincipals remarks
-    $pdf->SetX(10);
-    $pdf->SetFont('Arial','I','8');
-    $pdf->Cell(95,16,$principalC,1,0);
-    $pdf->SetX(109);
-    $pdf->SetFont('Arial','I','8');
-    $pdf->Cell(93,16,$teacherC,1,0);
-    $pdf->Cell(1,25,'',0,1);
-    $pdf->SetX(10);
-    $pdf->Image("functions/fpdf/principal.png",37,270,20,6);
-    $pdf->Cell(10,1,"Principal's signature......................",0,0);
-    $pdf->SetX(109);
-    $pdf->Cell(200,1,"Date & stamp...............................................................................................",0,0);
-
-     
-=======
->>>>>>> 2d6b745cbea980be5c34886d80f67c48320fc915
 
 
 

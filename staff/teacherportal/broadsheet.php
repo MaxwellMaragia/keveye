@@ -15,7 +15,7 @@ $periodt = substr($period, -1);
 $periody = substr($period, 0,4);
 $form = substr($class, -2,1);
 
-$pdf = new FPDF('L','mm',array(400,400));
+$pdf = new FPDF('L','mm','A3');
 $pdf->AddPage();
 
 //set font to arial,bold,14pt
