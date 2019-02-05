@@ -2,6 +2,7 @@
 session_start();
 $_SESSION['student-result']='';
 
+
 if($_SESSION['account'])
 {
     $_SESSION['exam']='CAT 1';
@@ -82,7 +83,7 @@ if($_SESSION['account'])
 
                                 //getting grade for updating
 
-                                $sql = "SELECT * FROM $grading_system WHERE upper_limit>=round($total[$i]) AND lower_limit<=round($total[$i])";
+                                $sql = "SELECT * FROM $grading_system WHERE upper_limit>=floor($total[$i]) AND lower_limit<=floor($total[$i])";
                                 $execute = mysqli_query($obj->con, $sql);
 
                                 if ($execute) {
@@ -140,6 +141,16 @@ if($_SESSION['account'])
                                             $count[$i] = $row['count'];
                                             $tpoints[$i] = $row['total_points']+$points[$i];
 
+                                        }
+
+                                        //deduct current subject points
+
+                                        $sql = "SELECT * FROM $grading_system WHERE upper_limit>=floor($temp[$i]) AND lower_limit<=floor($temp[$i])";
+                                        $execute = mysqli_query($obj->con, $sql);
+
+                                        while ($get_grades = mysqli_fetch_assoc($execute)) {
+                                            $tpoints[$i] = $tpoints[$i] - $get_grades['points'];
+                                            $current_points[$i] = $get_grades['points'];
                                         }
 
                                         //updating in cycle 1 results table
@@ -200,6 +211,9 @@ if($_SESSION['account'])
 
                                                 //remove the existing from total
 
+                                                if($get_agric[$i] || $get_bus[$i])
+                                                {
+
 
                                                 //pick the 2 highest
                                                 $sciences[$i] = array($biology[$i],$physics[$i],$temp[$i]);
@@ -230,12 +244,11 @@ if($_SESSION['account'])
                                                 $total_mark_one[$i] = $total_mark_one[$i] + $first_one[$i] + $second_one[$i];
 
                                                 //calculate points
-                                                $sci_points[$i] = array($biology_points[$i],$physics_points[$i],$points[$i]);
+                                                $sci_points[$i] = array($biology_points[$i],$physics_points[$i],$current_points[$i]);
                                                 rsort($sci_points[$i]);
                                                 $lowest_point[$i] = $sci_points[$i][2];
                                                 $tpoints[$i] = $tpoints[$i] - $lowest_point[$i];
-                                                if($get_agric[$i] || $get_bus[$i])
-                                                {
+
 
                                                     if($get_agric[$i])
                                                     {
@@ -298,6 +311,9 @@ if($_SESSION['account'])
                                                     $chemistry_one[$i] = $row['cat'];
                                                 }
 
+                                                if($get_agric[$i] || $get_bus[$i])
+                                                {
+
                                                 //pick the 2 highest
                                                 $sciences[$i] = array($chemistry[$i],$physics[$i],$temp[$i]);
                                                 $sciences_one[$i] = array($chemistry_one[$i],$physics_one[$i],$cycle_one[$i]);
@@ -326,13 +342,11 @@ if($_SESSION['account'])
                                                 $total_mark[$i] = $total_mark[$i] + $first[$i] + $second[$i];
                                                 $total_mark_one[$i] = $total_mark_one[$i] + $first_one[$i] + $second_one[$i];
 
-                                                $sci_points[$i] = array($chemistry_points[$i],$physics_points[$i],$points[$i]);
+                                                $sci_points[$i] = array($chemistry_points[$i],$physics_points[$i],$current_points[$i]);
                                                 rsort($sci_points[$i]);
                                                 $lowest_point[$i] = $sci_points[$i][2];
                                                 $tpoints[$i] = $tpoints[$i] - $lowest_point[$i];
 
-                                                if($get_agric[$i] || $get_bus[$i])
-                                                {
 
                                                     if($get_agric[$i])
                                                     {
@@ -426,7 +440,7 @@ if($_SESSION['account'])
                                                     $total_mark[$i] = $total_mark[$i] + $first[$i] + $second[$i];
                                                     $total_mark_one[$i] = $total_mark_one[$i] + $first_one[$i] + $second_one[$i];
 
-                                                    $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$points[$i]);
+                                                    $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$current_points[$i]);
                                                     rsort($sci_points[$i]);
                                                     $lowest_point[$i] = $sci_points[$i][2];
                                                     $tpoints[$i] = $tpoints[$i] - $lowest_point[$i];
@@ -511,7 +525,7 @@ if($_SESSION['account'])
                                                 $total_mark_one[$i] = $total_mark_one[$i] - max($humanities_one[$i]) - $cycle_one[$i];
 
                                                 //total points
-                                                $tpoints[$i] = $tpoints[$i] - min($geo_points[$i],$points[$i]);
+                                                $tpoints[$i] = $tpoints[$i] - min($geo_points[$i],$current_points[$i]);
 
                                                 //pick highest after update
                                                 $highest[$i] = array($geo[$i],$total[$i]);
@@ -545,7 +559,7 @@ if($_SESSION['account'])
                                                 $total_mark_one[$i] = $total_mark_one[$i] + max($humanities_one[$i]);
 
 
-                                                $hum_points[$i] = array($geo_points[$i],$cre_points[$i],$points[$i]);
+                                                $hum_points[$i] = array($geo_points[$i],$cre_points[$i],$current_points[$i]);
                                                 rsort($hum_points[$i]);
                                                 $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
                                             }
@@ -575,7 +589,7 @@ if($_SESSION['account'])
                                                 $total_mark_one[$i] = $total_mark_one[$i] - max($humanities_one[$i]) - $cycle_one[$i];
 
                                                 //total points
-                                                $tpoints[$i] = $tpoints[$i] - min($cre_points[$i],$points[$i]);
+                                                $tpoints[$i] = $tpoints[$i] - min($cre_points[$i],$current_points[$i]);
 
                                                 //pick highest after update
                                                 $highest[$i] = array($cre[$i],$total[$i]);
@@ -600,7 +614,7 @@ if($_SESSION['account'])
                                                 $total_mark_one[$i] = $total_mark_one[$i] - max($humanities_one[$i]) - $cycle_one[$i];
 
                                                 //total points
-                                                $tpoints[$i] = $tpoints[$i] - min($cre_points[$i],$points[$i]);
+                                                $tpoints[$i] = $tpoints[$i] - min($cre_points[$i],$current_points[$i]);
 
                                                 //pick highest after update
                                                 $highest[$i] = array($his[$i],$total[$i]);
@@ -633,7 +647,7 @@ if($_SESSION['account'])
                                                 $total_mark[$i] = $total_mark[$i] + max($humanities[$i]);
                                                 $total_mark_one[$i] = $total_mark_one[$i] + max($humanities_one[$i]);
 
-                                                $hum_points[$i] = array($his_points[$i],$cre_points[$i],$points[$i]);
+                                                $hum_points[$i] = array($his_points[$i],$cre_points[$i],$current_points[$i]);
                                                 rsort($hum_points[$i]);
                                                 $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
                                             }
@@ -662,7 +676,7 @@ if($_SESSION['account'])
                                                 $total_mark_one[$i] = $total_mark_one[$i] - max($humanities_one[$i]) - $cycle_one[$i];
 
                                                 //total points
-                                                $tpoints[$i] = $tpoints[$i] - min($geo_points[$i],$points[$i]);
+                                                $tpoints[$i] = $tpoints[$i] - min($geo_points[$i],$current_points[$i]);
 
                                                 //pick highest after update
                                                 $highest[$i] = array($geo[$i],$total[$i]);
@@ -687,7 +701,7 @@ if($_SESSION['account'])
                                                 $total_mark_one[$i] = $total_mark_one[$i] - max($humanities_one[$i]) - $cycle_one[$i];
 
                                                 //total points
-                                                $tpoints[$i] = $tpoints[$i] - min($his_points[$i],$points[$i]);
+                                                $tpoints[$i] = $tpoints[$i] - min($his_points[$i],$current_points[$i]);
 
                                                 //pick highest after update
                                                 $highest[$i] = array($his[$i],$total[$i]);
@@ -793,7 +807,7 @@ if($_SESSION['account'])
                                                 {
                                                     //deduct the lowest
                                                     $total_mark[$i] = $total_mark[$i] - $temp[$i];
-                                                    $tpoints[$i] = $tpoints[$i] - $points[$i];
+                                                    $tpoints[$i] = $tpoints[$i] - $current_points[$i];
 
                                                     if($lowest[$i] > $total[$i])
                                                     {
@@ -888,7 +902,7 @@ if($_SESSION['account'])
                                                 {
                                                     //deduct the lowest
                                                     $total_mark[$i] = $total_mark[$i] - $temp[$i];
-                                                    $tpoints[$i] = $tpoints[$i] - $points[$i];
+                                                    $tpoints[$i] = $tpoints[$i] - $current_points[$i];
 
                                                     if($lowest[$i] > $total[$i])
                                                     {
@@ -915,12 +929,13 @@ if($_SESSION['account'])
                                             }
 
                                         }
+
                                         $average[$i]=$total_mark[$i]/$min;
-                                        $average_one[$i]=$total_mark_one[$i]/$min;
+
                                         $average_points[$i] = $tpoints[$i]/$min;
 
                                         //get new grade
-                                        $sql = "SELECT * FROM 'grading_system.$form' WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
+                                        $sql = "SELECT * FROM $grading_system WHERE upper_limit>=floor($average[$i]) AND lower_limit<=floor($average[$i])";
                                         $execute = mysqli_query($obj->con, $sql);
 
                                         if ($execute) {
@@ -952,8 +967,9 @@ if($_SESSION['account'])
 
                                             if($get_cycle_one)
                                             {
+                                                $average_one[$i]=$total_mark_one[$i]/$min;
                                                 //get new grade
-                                                $sql = "SELECT * FROM $grading_system WHERE upper_limit>=round($average_one[$i]) AND lower_limit<=round($average_one[$i])";
+                                                $sql = "SELECT * FROM $grading_system WHERE upper_limit>=floor($average_one[$i]) AND lower_limit<=floor($average_one[$i])";
                                                 $execute = mysqli_query($obj->con, $sql);
 
                                                 if ($execute) {
@@ -1039,7 +1055,7 @@ if($_SESSION['account'])
                         {
                             //fetching the grade for grading
 
-                            $sql_grade="SELECT * FROM $grading_system WHERE upper_limit>=round($mark[$i]) AND lower_limit<=round($mark[$i])";
+                            $sql_grade="SELECT * FROM $grading_system WHERE upper_limit>=floor($mark[$i]) AND lower_limit<=floor($mark[$i])";
                             $execute_grade=mysqli_query($obj->con,$sql_grade);
 
                             if($execute_grade) {
@@ -1395,7 +1411,6 @@ if($_SESSION['account'])
                                                     //deduct the lowest
                                                     $total_mark[$i] = $total_mark[$i] - $mark[$i];
                                                     $tpoints[$i] = $tpoints[$i] - $points[$i];
-                                                    $total_mark[$i] = $total_mark[$i] + $lowest[$i];
 
                                                 }
                                                 else if($lowest[$i] <= $mark[$i])
@@ -1467,7 +1482,6 @@ if($_SESSION['account'])
                                                 {
                                                     //deduct the lowest
                                                     $total_mark[$i] = $total_mark[$i] - $mark[$i];
-                                                    $total_mark[$i] = $total_mark[$i] + $lowest[$i];
                                                     $tpoints[$i] = $tpoints[$i] - $points[$i];
 
                                                 }
@@ -1516,6 +1530,10 @@ if($_SESSION['account'])
                                                 $humanities_one[$i] = array($cre_one[$i],$cycle_one[$i]);
                                                 $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
                                                 $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
+
+                                                $tpoints[$i] = $tpoints[$i] - min($cre_points[$i],$points[$i]);
+
+
                                             }
 
                                             //if geography exists but not cre
@@ -1532,6 +1550,9 @@ if($_SESSION['account'])
                                                 $humanities_one[$i] = array($geo_one[$i],$cycle_one[$i]);
                                                 $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
                                                 $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
+
+                                                $tpoints[$i] = $tpoints[$i] - min($cre_points[$i],$points[$i]);
+
                                             }
                                             if($get_cre[$i] && $get_geo[$i])
                                             {
@@ -1555,6 +1576,10 @@ if($_SESSION['account'])
                                                 $humanities_one[$i] = array($cycle_one[$i],$geo_one[$i],$cre_one[$i]);
                                                 $total_mark[$i] = $total_mark[$i] + max($humanities[$i]);
                                                 $total_mark_one[$i] = $total_mark_one[$i] + max($humanities_one[$i]);
+
+                                                $hum_points[$i] = array($geo_points[$i],$cre_points[$i],$points[$i]);
+                                                rsort($hum_points[$i]);
+                                                $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
                                             }
 
                                         }
@@ -1573,12 +1598,15 @@ if($_SESSION['account'])
                                                 {
                                                     $cre[$i] = $row['total'];
                                                     $cre_one[$i] = $row['cat'];
+                                                    $cre_points[$i] = $row['points'];
                                                 }
                                                 //swapping
                                                 $humanities[$i] = array($cre[$i],$mark[$i]);
                                                 $humanities_one[$i] = array($cre_one[$i],$cycle_one[$i]);
                                                 $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
                                                 $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
+
+                                                $tpoints[$i] = $tpoints[$i] - min($cre_points[$i],$points[$i]);
                                             }
 
                                             //if geography exists but not cre
@@ -1588,12 +1616,16 @@ if($_SESSION['account'])
                                                 {
                                                     $his[$i] = $row['total'];
                                                     $his_one[$i] = $row['cat'];
+                                                    $his_points[$i] = $row['points'];
                                                 }
                                                 //swapping
                                                 $humanities[$i] = array($his[$i],$mark[$i]);
                                                 $humanities_one[$i] = array($his_one[$i],$cycle_one[$i]);
                                                 $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
                                                 $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
+
+                                                $tpoints[$i] = $tpoints[$i] - min($his_points[$i],$points[$i]);
+
                                             }
                                             if($get_cre[$i] && $get_hist[$i])
                                             {
@@ -1617,6 +1649,10 @@ if($_SESSION['account'])
                                                 $humanities_one[$i] = array($cycle_one[$i],$his_one[$i],$cre_one[$i]);
                                                 $total_mark[$i] = $total_mark[$i] + max($humanities[$i]);
                                                 $total_mark_one[$i] = $total_mark_one[$i] + max($humanities_one[$i]);
+
+                                                $hum_points[$i] = array($his_points[$i],$cre_points[$i],$points[$i]);
+                                                rsort($hum_points[$i]);
+                                                $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
                                             }
                                         }
                                         if($form>=3 && $subject == 'CRE')
@@ -1634,12 +1670,15 @@ if($_SESSION['account'])
                                                 {
                                                     $geo[$i] = $row['total'];
                                                     $geo_one[$i] = $row['cat'];
+                                                    $geo_points[$i] = $row['points'];
                                                 }
                                                 //swapping
                                                 $humanities[$i] = array($geo[$i],$mark[$i]);
                                                 $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
                                                 $humanities_one[$i] = array($geo_one[$i],$cycle_one[$i]);
                                                 $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
+
+                                                $tpoints[$i] = $tpoints[$i] - min($geo_points[$i],$points[$i]);
                                             }
 
                                             //if geography exists but not cre
@@ -1649,13 +1688,19 @@ if($_SESSION['account'])
                                                 {
                                                     $his[$i] = $row['total'];
                                                     $his_one[$i] = $row['cat'];
+                                                    $his_points[$i] = $row['points'];
+
                                                 }
                                                 //swapping
                                                 $humanities[$i] = array($his[$i],$mark[$i]);
                                                 $humanities_one[$i] = array($his_one[$i],$cycle_one[$i]);
                                                 $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
                                                 $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
+
+                                                $tpoints[$i] = $tpoints[$i] - min($points[$i],$his_points[$i]);
+
                                             }
+
                                             if($get_geo[$i] && $get_hist[$i])
                                             {
                                                 foreach($get_hist[$i] as $row)
@@ -1678,6 +1723,11 @@ if($_SESSION['account'])
                                                 $humanities_one[$i] = array($cycle_one[$i],$his_one[$i],$geo_one[$i]);
                                                 $total_mark[$i] = $total_mark[$i] + max($humanities[$i]);
                                                 $total_mark_one[$i] = $total_mark_one[$i] + max($humanities_one[$i]);
+
+                                                $hum_points[$i] = array($his_points[$i],$geo_points[$i],$points[$i]);
+                                                rsort($hum_points[$i]);
+                                                $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
+
                                             }
                                         }
 
@@ -1689,7 +1739,7 @@ if($_SESSION['account'])
                                         $average_points[$i] = $tpoints[$i] / $min;
 
 
-                                        $sql_grade = "SELECT * FROM 'grading_system.$form' WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
+                                        $sql_grade = "SELECT * FROM $grading_system WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
                                         $execute_grade = mysqli_query($obj->con, $sql_grade);
 
                                         if ($execute_grade) {
@@ -1894,13 +1944,10 @@ if($_SESSION['account'])
                                         }
                                     }
                                 }
-
-
                             }
                             else
                             {
-//                                $error="Problem with grading system";
-                                $error = mysqli_error($obj->con);
+                                $error="Problem with grading system";
                             }
 
                         }
