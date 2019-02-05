@@ -88,10 +88,16 @@ else
 
                                 ?>
                                 <th>
-                                    Total
+                                    Total marks
                                 </th>
                                 <th>
-                                    Average
+                                    Average marks
+                                </th>
+                                <th>
+                                    Total points
+                                </th>
+                                <th>
+                                    Average points
                                 </th>
                                 <th>
                                     Grade
@@ -132,6 +138,12 @@ else
                                     </td>
                                     <td style='color:blue'>
                                         <?php echo $get_results['average']?>
+                                    </td>
+                                    <td style='color:blue'>
+                                        <?php echo $get_results['total_points']?>
+                                    </td>
+                                    <td style='color:blue'>
+                                        <?php echo $get_results['average_points']?>
                                     </td>
                                     <td style='color:blue'>
                                         <?php echo $get_results['grade']?>
