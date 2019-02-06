@@ -66,8 +66,18 @@ if($_SESSION['account'])
                           check if previous results
                           exist
                         */
-                        $mark[$i] = $mark[$i] / 2;
-                        $cycle_one[$i] = $mark[$i] * 2;
+
+
+                       if($term != 3)
+                       {
+                           $mark[$i] = $mark[$i] / 2;
+                           $cycle_one[$i] = $mark[$i] * 2;
+                       }
+                       else
+                       {
+                           $cycle_one[$i] = $mark[$i];
+                       }
+
 
                         $where=array("admission"=>$admission[$i],"period"=>$period,"subject"=>$subject);
                         $fetch_results=$obj->fetch_records("results",$where);
@@ -173,6 +183,10 @@ if($_SESSION['account'])
 
                                             }
                                         }
+                                        else
+                                        {
+                                            $total_mark_one[$i] = $cycle_one[$i];
+                                        }
 
 //                                      if($class[0]>=3)
 //                                      {
@@ -182,7 +196,7 @@ if($_SESSION['account'])
 //                                      {
 //                                          $average[$i]=$total_mark[$i]/$min;
 //                                      }
-                                        if($form>=3 && $subject == 'Chemistry')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Chemistry')
                                         {
                                             //check if physics or biology exist
 
@@ -247,9 +261,7 @@ if($_SESSION['account'])
 
                                                 //calculate points
                                                 $sci_points[$i] = array($biology_points[$i],$physics_points[$i],$current_points[$i]);
-                                                rsort($sci_points[$i]);
-                                                $lowest_point[$i] = $sci_points[$i][2];
-                                                $tpoints[$i] = $tpoints[$i] - $lowest_point[$i];
+
 
 
                                                     if($get_agric[$i])
@@ -276,6 +288,10 @@ if($_SESSION['account'])
                                                         $total_mark[$i] = $total_mark[$i] - $technical[$i] + $lowest[$i];
                                                         $tpoints[$i] = $tpoints[$i] - $technical_points[$i] + $lowest_point[$i];
                                                     }
+                                                    else
+                                                    {
+                                                        $tpoints[$i] = $tpoints[$i] + $technical_points[$i] - $lowest_point[$i];
+                                                    }
                                                     if($lowest_one[$i] > $technical_one[$i])
                                                     {
                                                         $total_mark_one[$i] = $total_mark_one[$i] - $technical_one[$i] + $lowest_one[$i];
@@ -284,7 +300,7 @@ if($_SESSION['account'])
                                             }
                                         }
 
-                                        if($form>=3 && $subject == 'Biology')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Biology')
                                         {
                                             //check if physics and chemistry exist
 
@@ -382,7 +398,7 @@ if($_SESSION['account'])
                                                 }
                                             }
                                         }
-                                        if($form>=3 && $subject == 'Physics')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Physics')
                                         {
                                             //check if biology and chemistry exist
 
@@ -481,7 +497,7 @@ if($_SESSION['account'])
                                             }
                                         }
 
-                                        if($form>=3 && $subject == 'History')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'History')
                                         {
                                             //check if cre and geog exist
                                             $where = array('subject'=>'CRE','admission'=>$admission[$i],'period'=>$period);
@@ -578,7 +594,7 @@ if($_SESSION['account'])
                                             }
 
                                         }
-                                        if($form>=3 && $subject == 'Geography')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Geography')
                                         {
                                             //check if cre and hist exist
                                             $where = array('subject'=>'CRE','admission'=>$admission[$i],'period'=>$period);
@@ -676,7 +692,7 @@ if($_SESSION['account'])
                                                 $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
                                             }
                                         }
-                                        if($form>=3 && $subject == 'CRE')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'CRE')
                                         {
                                             //check if geo and hist exist
                                             $where = array('subject'=>'Geography','admission'=>$admission[$i],'period'=>$period);
@@ -775,7 +791,7 @@ if($_SESSION['account'])
                                             }
                                         }
 
-                                        if($form>=3 && $subject == 'Agriculture')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Agriculture')
                                         {
                                             //check if 3 sciences exist
                                             //check if physics and chemistry exist
@@ -814,12 +830,17 @@ if($_SESSION['account'])
                                                 $sciences_one[$i] = array($chemistry_one[$i],$physics_one[$i],$biology_one[$i]);
 
                                                 $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$physics_points[$i]);
-                                                rsort($sci_points[$i]);
-                                                $lowest_point[$i] = min($sci_points[$i]);
 
 
                                                 $lowest[$i] = min($sciences[$i]);
                                                 $lowest_one[$i] = min($sciences_one[$i]);
+
+                                                //calculate points
+                                                if($lowest[$i] < $total[$i])
+                                                {
+                                                    $tpoints[$i]= $tpoints[$i] - min($sci_points[$i]) + $current_points[$i];
+
+                                                }
 
 
                                                 //compare lowest to agriculture
@@ -834,8 +855,6 @@ if($_SESSION['account'])
                                                         $total_mark[$i] = $total_mark[$i] + $lowest[$i];
                                                     }
                                                     else{
-                                                        $tpoints[$i] = $tpoints[$i] - $lowest_point[$i];
-                                                        $tpoints[$i] = $tpoints[$i] + $current_points[$i];
                                                         $total_mark[$i] = $total_mark[$i] - $mark[$i];
                                                         $total_mark[$i] = $total_mark[$i] + $total[$i];
                                                     }
@@ -852,8 +871,6 @@ if($_SESSION['account'])
                                                         $total_mark[$i] = $total_mark[$i] + $lowest[$i];
                                                     }
                                                     else{
-                                                        $tpoints[$i] = $tpoints[$i] - $lowest_point[$i];
-                                                        $tpoints[$i] = $tpoints[$i] + $current_points[$i];
                                                         $total_mark[$i] = $total_mark[$i] - $mark[$i];
                                                         $total_mark[$i] = $total_mark[$i] + $total[$i];
                                                     }
@@ -873,7 +890,7 @@ if($_SESSION['account'])
                                             }
 
                                         }
-                                        if($form>=3 && $subject == 'Business')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Business')
                                         {
                                             //check if 3 sciences exist
 
@@ -912,11 +929,17 @@ if($_SESSION['account'])
                                                 $sciences_one[$i] = array($chemistry_one[$i],$physics_one[$i],$biology_one[$i]);
 
                                                 $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$physics_points[$i]);
-                                                rsort($sci_points[$i]);
-                                                $lowest_point[$i] = min($sci_points[$i]);
+
 
                                                 $lowest[$i] = min($sciences[$i]);
                                                 $lowest_one[$i] = min($sciences_one[$i]);
+
+                                                //calculate points
+                                                if($lowest[$i] < $total[$i])
+                                                {
+                                                    $tpoints[$i]= $tpoints[$i] - min($sci_points[$i]) + $current_points[$i];
+
+                                                }
 
                                                 //compare lowest to business
                                                 if($lowest[$i] >= $temp[$i])
@@ -930,8 +953,6 @@ if($_SESSION['account'])
                                                         $total_mark[$i] = $total_mark[$i] + $lowest[$i];
                                                     }
                                                     else{
-                                                        $tpoints[$i] = $tpoints[$i] - $lowest_point[$i];
-                                                        $tpoints[$i] = $tpoints[$i] + $current_points[$i];
                                                         $total_mark[$i] = $total_mark[$i] - $mark[$i];
                                                         $total_mark[$i] = $total_mark[$i] + $total[$i];
                                                     }
@@ -948,8 +969,7 @@ if($_SESSION['account'])
                                                         $total_mark[$i] = $total_mark[$i] + $lowest[$i];
                                                     }
                                                     else{
-                                                        $tpoints[$i] = $tpoints[$i] - $lowest_point[$i];
-                                                        $tpoints[$i] = $tpoints[$i] + $current_points[$i];
+
                                                         $total_mark[$i] = $total_mark[$i] - $mark[$i];
                                                         $total_mark[$i] = $total_mark[$i] + $total[$i];
                                                     }
@@ -975,7 +995,7 @@ if($_SESSION['account'])
                                         $average_points[$i] = $tpoints[$i]/$min;
 
                                         //get new grade
-                                        $sql = "SELECT * FROM $grading_system WHERE upper_limit>=floor($average[$i]) AND lower_limit<=floor($average[$i])";
+                                        $sql = "SELECT * FROM $grading_system WHERE upper_limit>=$tpoints[$i] AND lower_limit<=$tpoints[$i]";
                                         $execute = mysqli_query($obj->con, $sql);
 
                                         if ($execute) {
@@ -1166,9 +1186,13 @@ if($_SESSION['account'])
                                         if($get_cycle_one) {
                                             foreach ($get_cycle_one as $row) {
                                                 $total_mark_one[$i] = $row['total'] + $cycle_one[$i];
-                                                $count[$i] = $row['count'];
+                                                $count_one[$i] = $row['count']+1;
 
                                             }
+                                        }
+                                        else
+                                        {
+                                            $total_mark_one[$i] = $cycle_one[$i];
                                         }
 
 //                                          if($class[0]>=3)
@@ -1180,7 +1204,7 @@ if($_SESSION['account'])
 //                                              $average[$i]=$total_mark[$i]/$min;
 //                                          }
 
-                                        if($form>=3 && $subject == 'Chemistry')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Chemistry')
                                         {
                                             //check if physics or biology exist
 
@@ -1244,15 +1268,24 @@ if($_SESSION['account'])
                                                     if( min($sciences[$i]) > $humanity[$i])
                                                     {
                                                         $total_mark[$i] = $total_mark[$i] - $humanity[$i] +  min($sciences[$i]);
-                                                        $tpoints[$i] = $tpoints[$i] - $humanity_point[$i] + min($sci_points[$i]);
+                                                        $tpoints[$i] = $tpoints[$i] - $humanity_point[$i];
                                                         $total_mark_one[$i] = $total_mark_one[$i] - $humanity_one[$i] +  min($sciences_one[$i]);
                                                     }
+                                                    else
+                                                    {
+                                                        $tpoints[$i] = $tpoints[$i] - min($sci_points[$i]);
+                                                    }
+                                                    if( min($sciences_one[$i]) > $humanity_one[$i])
+                                                    {
+                                                        $total_mark_one[$i] = $total_mark_one[$i] - $humanity_one[$i] +  min($sciences_one[$i]);
+                                                    }
+
 
 
                                                 }
                                             }
                                         }
-                                        if($form>=3 && $subject == 'Biology')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Biology')
                                         {
                                             //check if physics and chemistry exist
 
@@ -1315,7 +1348,11 @@ if($_SESSION['account'])
                                                     if( min($sciences[$i]) > $humanity[$i])
                                                     {
                                                         $total_mark[$i] = $total_mark[$i] - $humanity[$i] +  min($sciences[$i]);
-                                                        $tpoints[$i] = $tpoints[$i] - $humanity_point[$i] + min($sci_points[$i]);
+                                                        $tpoints[$i] = $tpoints[$i] - $humanity_point[$i];
+                                                    }
+                                                    else
+                                                    {
+                                                        $tpoints[$i] = $tpoints[$i] - min($sci_points[$i]);
                                                     }
                                                     if( min($sciences_one[$i]) > $humanity_one[$i])
                                                     {
@@ -1323,10 +1360,11 @@ if($_SESSION['account'])
                                                     }
 
 
+
                                                 }
                                             }
                                         }
-                                        if($form>=3 && $subject == 'Physics')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Physics')
                                         {
                                             //check if biology and chemistry exist
 
@@ -1392,8 +1430,12 @@ if($_SESSION['account'])
                                                     if( min($sciences[$i]) > $humanity[$i])
                                                     {
                                                         $total_mark[$i] = $total_mark[$i] - $humanity[$i] +  min($sciences[$i]);
-                                                        $tpoints[$i] = $tpoints[$i] - $humanity_point[$i] + min($sci_points[$i]);
+                                                        $tpoints[$i] = $tpoints[$i] - $humanity_point[$i];
 
+                                                    }
+                                                    else
+                                                    {
+                                                        $tpoints[$i] = $tpoints[$i] - min($sci_points[$i]);
                                                     }
                                                     if( min($sciences_one[$i]) > $humanity_one[$i])
                                                     {
@@ -1401,10 +1443,11 @@ if($_SESSION['account'])
                                                     }
 
 
+
                                                 }
                                             }
                                         }
-                                        if($form>=3 && $subject == 'Agriculture')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Agriculture')
                                         {
                                             //check if 3 sciences exist
 
@@ -1443,8 +1486,7 @@ if($_SESSION['account'])
                                                 $sciences_one[$i] = array($chemistry_one[$i],$physics_one[$i],$biology_one[$i]);
 
                                                 $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$physics_points[$i]);
-                                                rsort($sci_points[$i]);
-                                                $lowest_point[$i] = min($sci_points[$i]);
+
 
                                                 $lowest[$i] = min($sciences[$i]);
                                                 $lowest_one[$i] = min($sciences_one[$i]);
@@ -1480,7 +1522,7 @@ if($_SESSION['account'])
                                             }
 
                                         }
-                                        if($form>=3 && $subject == 'Business')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Business')
                                         {
                                             //check if 3 sciences exist
 
@@ -1516,7 +1558,8 @@ if($_SESSION['account'])
                                                 //check lowest science
                                                 $sciences[$i] = array($chemistry[$i],$physics[$i],$biology[$i]);
                                                 $sciences_one[$i] = array($chemistry_one[$i],$physics_one[$i],$biology_one[$i]);
-
+                                                $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$physics_points[$i]);
+                                                ;
 
                                                 $lowest[$i] = min($sciences[$i]);
                                                 $lowest_one[$i] = min($sciences_one[$i]);
@@ -1552,7 +1595,7 @@ if($_SESSION['account'])
 
                                         }
 
-                                        if($form>=3 && $subject == 'History')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'History')
                                         {
                                             //check if cre and geog exist
                                             $where = array('subject'=>'CRE','admission'=>$admission[$i],'period'=>$period);
@@ -1627,7 +1670,7 @@ if($_SESSION['account'])
                                             }
 
                                         }
-                                        if($form>=3 && $subject == 'Geography')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Geography')
                                         {
                                             //check if cre and hist exist
                                             $where = array('subject'=>'CRE','admission'=>$admission[$i],'period'=>$period);
@@ -1699,7 +1742,7 @@ if($_SESSION['account'])
                                                 $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
                                             }
                                         }
-                                        if($form>=3 && $subject == 'CRE')
+                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'CRE')
                                         {
                                             //check if geo and hist exist
                                             $where = array('subject'=>'Geography','admission'=>$admission[$i],'period'=>$period);
@@ -1783,7 +1826,7 @@ if($_SESSION['account'])
                                         $average_points[$i] = $tpoints[$i] / $min;
 
 
-                                        $sql_grade = "SELECT * FROM $grading_system WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
+                                        $sql_grade = "SELECT * FROM $grading_system WHERE upper_limit>=$tpoints[$i] AND lower_limit<=$tpoints[$i]";
                                         $execute_grade = mysqli_query($obj->con, $sql_grade);
 
                                         if ($execute_grade) {
@@ -1841,6 +1884,7 @@ if($_SESSION['account'])
                                                     "average" => $average_one[$i],
                                                     "grade" => $grade_one[$i],
                                                     "points" => $points_one[$i],
+                                                    "count" => $count_one[$i],
                                                     "remarks" => $remarks_one[$i]
 
                                                 );

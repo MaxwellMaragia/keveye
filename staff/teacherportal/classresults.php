@@ -71,34 +71,34 @@ else
                             <thead>
                             <tr>
                                 <th>
-                                    Student names
+                                    Names
                                 </th>
                                 <th>
-                                    Admission
+                                    Adm
                                 </th>
                                 <?php
 
                                 $get_subjects = $obj->fetch_all_records("subject");
                                 foreach($get_subjects as $row)
                                 {
-                                    echo "<th>".$row['SubjectName']."</th>";
+                                    echo "<th>".$row['SubjectKey']."</th>";
                                 }
 
                                 ?>
                                 <th>
-                                    Total marks
+                                    T.M
                                 </th>
                                 <th>
-                                    Average marks
+                                    A.M
                                 </th>
                                 <th>
-                                    Total points
+                                    T.P
                                 </th>
                                 <th>
-                                    Average points
+                                    A.P
                                 </th>
                                 <th>
-                                    Grade
+                                    M.G
                                 </th>
 
                             </tr>

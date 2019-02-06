@@ -105,7 +105,7 @@ if(isset($_POST['save']))
                 "category"=>$category,
                 "account"=>"active",
                 "password"=>$password,
-                "mobile"=>$mobile,
+                "fathersmobile"=>$mobile,
                 "fee_owed"=>$fee_balance,
                 "kcpe"=>$kcpe,
                 "fee_paid"=>0
@@ -120,7 +120,7 @@ if(isset($_POST['save']))
             }
             else
             {
-                $error="Could not save record";
+                $error=mysqli_error($obj->con);
             }
 
         }
