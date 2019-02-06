@@ -190,7 +190,13 @@ for($i=0 ; $i<=$dataMax ; $i+=$dataStep){
 	$yAxisPos=$chartBoxY+($yAxisUnits*$i);
 	//draw y axis line
 	$pdf->Line(
-		$chartBoxX-2 ,
+		$chartBoxX+100 ,
+		$yAxisPos ,
+		$chartBoxX ,
+		$yAxisPos
+	);
+	$pdf->Line(
+		$chartBoxX-5 ,
 		$yAxisPos ,
 		$chartBoxX ,
 		$yAxisPos
