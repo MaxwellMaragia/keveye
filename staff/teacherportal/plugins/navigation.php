@@ -39,7 +39,10 @@
                 <!-- -->
                 <!-- -->
                 <li>
-                    <a href="enterresults.php"><i class="fa fa-clipboard"></i>Enter exam results</a>
+                    <a href="enterresults.php"><i class="fa fa-clipboard"></i>Enter group exam results</a>
+                </li>
+                <li>
+                    <a href="enterresults.php"><i class="fa fa-clipboard"></i>Enter individual exam results</a>
                 </li>
                 <li>
                     <a href="#"><i class="fa fa-book"></i>Grading system<span class="fa arrow"></span></a>

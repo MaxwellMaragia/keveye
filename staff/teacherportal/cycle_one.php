@@ -91,9 +91,14 @@ else
                                         A.M
                                     </th>
                                     <th>
+                                        T.P
+                                    </th>
+                                    <th>
+                                        A.P
+                                    </th>
+                                    <th>
                                         M.G
                                     </th>
-
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -130,6 +135,12 @@ else
                                         </td>
                                         <td style='color:blue'>
                                             <?php echo $get_results['average']?>
+                                        </td>
+                                        <td style='color:blue'>
+                                            <?php echo $get_results['total_points']?>
+                                        </td>
+                                        <td style='color:blue'>
+                                            <?php echo $get_results['average_points']?>
                                         </td>
                                         <td style='color:blue'>
                                             <?php echo $get_results['grade']?>

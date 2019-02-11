@@ -71,11 +71,11 @@ if($_SESSION['account'])
                        if($term != 3)
                        {
                            $mark[$i] = $mark[$i] / 2;
-                           $cycle_one[$i] = $mark[$i] * 2;
+                           $cycle_two[$i] = $mark[$i] * 2;
                        }
                        else
                        {
-                           $cycle_one[$i] = $mark[$i];
+                           $cycle_two[$i] = $mark[$i];
                        }
 
 
@@ -88,10 +88,6 @@ if($_SESSION['account'])
                             foreach($fetch_results as $row)
                             {
                                 $total[$i] = $row['total'] + $mark[$i];
-                                $temp[$i] =$row['total'];
-                                $subject_points[$i]=$row['points'];
-
-
 
                                 //getting grade for updating
 
@@ -111,11 +107,12 @@ if($_SESSION['account'])
 
 
                                     //getting grade for cycle 1
-                                    $sql = "SELECT * FROM $grading_system WHERE upper_limit>=$cycle_one[$i] AND lower_limit<=$cycle_one[$i]";
+                                    $sql = "SELECT * FROM $grading_system WHERE upper_limit>=$cycle_two[$i] AND lower_limit<=$cycle_two[$i]";
                                     $execute = mysqli_query($obj->con, $sql);
 
                                     while ($get_grades = mysqli_fetch_assoc($execute)) {
-                                        $cycle_one_grade[$i] = $get_grades['grade'];
+                                        $cycle_two_grade[$i] = $get_grades['grade'];
+                                        $cycle_two_points[$i] = $get_grades['points'];
                                     }
 
                                     //updating data to subject results table
@@ -123,8 +120,9 @@ if($_SESSION['account'])
 
                                     $data = array(
 
-                                        "mid" => $cycle_one[$i],
-                                        "mid_grade"=>$cycle_one_grade[$i],
+                                        "mid" => $cycle_two[$i],
+                                        "mid_grade"=>$cycle_two_grade[$i],
+                                        "mid_points"=>$cycle_two_points[$i],
                                         "total" => $total[$i],
                                         "grade" => $grade[$i],
                                         "points" => $points[$i],
@@ -143,859 +141,122 @@ if($_SESSION['account'])
 
                                         //getting from final results table so as to update
                                         $where=array("admission"=>$admission[$i],"period"=>$period);
-                                        $get_final=$obj->fetch_records("final_result",$where);
 
-                                        foreach($get_final as $row)
-                                        {
-                                            $total_mark[$i]=$row['total']+$mark[$i];
-                                            $total_new[$i]=$total_mark[$i];
-                                            $subject_total[$i]=$row[$subject]+$mark[$i];
-                                            $count[$i] = $row['count'];
-                                            $tpoints[$i] = $row['total_points']+$points[$i];
-
-                                        }
-
-                                        //deduct current subject points
-
-                                        $sql = "SELECT * FROM $grading_system WHERE upper_limit>=floor($temp[$i]) AND lower_limit<=floor($temp[$i])";
-                                        $execute = mysqli_query($obj->con, $sql);
-
-                                        while ($get_grades = mysqli_fetch_assoc($execute)) {
-                                            $tpoints[$i] = $tpoints[$i] - $get_grades['points'];
-                                            $current_points[$i] = $get_grades['points'];
-                                        }
-
-
-
-                                        //updating in cycle 1 results table
-
-                                        //getting from cycle 1 results table so as to update
                                         $where=array("admission"=>$admission[$i],"period"=>$period);
-                                        $get_cycle_one=$obj->fetch_records("cycle_two",$where);
+                                        $get_cycle_two=$obj->fetch_records("cycle_two",$where);
 
-
-                                        //if results exist in cycle one table
-                                        if($get_cycle_one) {
-                                            foreach ($get_cycle_one as $row) {
-                                                $total_mark_one[$i] = $row['total'] + $cycle_one[$i];
-                                                $count[$i] = $row['count'];
-                                                $points_one = $row['points'];
-
-                                            }
-                                        }
-                                        else
+                                        //if results exist, we update the current
+                                        $fetch_total=$obj->fetch_records("final_result",$where,$data);
+                                        if($fetch_total)
                                         {
-                                            $total_mark_one[$i] = $cycle_one[$i];
+                                            foreach($fetch_total as $row)
+                                            {
+                                                $subject_total[$i]=$row[$subject]+$mark[$i];
+                                            }
                                         }
 
-//                                      if($class[0]>=3)
-//                                      {
-//                                          $average[$i]=$total_mark[$i]/$count[$i];
-//                                      }
-//                                      else
-//                                      {
-//                                          $average[$i]=$total_mark[$i]/$min;
-//                                      }
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Chemistry')
+
+                                        //grading algorithm
+                                        $sql = "SELECT sum(points),sum(total) FROM results WHERE admission='$admission[$i]'  AND period = '$period'";
+                                        $exe = mysqli_query($obj->con,$sql);
+                                        $get_points = mysqli_fetch_array($exe);
+                                        $points[$i] = $get_points['sum(points)'];
+                                        $total_mark[$i] = $get_points['sum(total)'];
+
+                                        if(($form>=3 || ($form==2 && $term==3)))
                                         {
-                                            //check if physics or biology exist
+                                            //biology
+                                            $sql = "SELECT points,total FROM results WHERE subject='Biology' AND admission='$admission[$i]' AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_bio = mysqli_fetch_array($exe);
+                                            $biology[$i] = $get_bio['points'];
+                                            $bio[$i] = $get_bio['total'];
+
+                                            //physics
+                                            $sql = "SELECT points,total FROM results WHERE subject='Physics' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_phy = mysqli_fetch_array($exe);
+                                            $physics[$i] = $get_phy['points'];
+                                            $phy[$i] = $get_phy['total'];
+
+                                            //chemistry
+                                            $sql = "SELECT points,total FROM results WHERE subject='Chemistry' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_chem = mysqli_fetch_array($exe);
+                                            $chemistry[$i] = $get_chem['points'];
+                                            $chem[$i] = $get_chem['total'];
 
 
-                                            $where = array('subject'=>'Biology','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bio[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Physics','admission'=>$admission[$i],'period'=>$period);
-                                            $get_phy[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Agriculture','admission'=>$admission[$i],'period'=>$period);
-                                            $get_agric[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Business','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bus[$i] = $obj->fetch_records('results',$where);
+                                            //agriculture
+                                            $sql = "SELECT points,total FROM results WHERE subject='Agriculture' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_agri = mysqli_fetch_array($exe);
+                                            $agriculture[$i] = $get_agri['points'];
+                                            $agri[$i] = $get_agri['total'];
 
+                                            //business
+                                            $sql = "SELECT points,total FROM results WHERE subject='Business' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_bus = mysqli_fetch_array($exe);
+                                            $business[$i] = $get_bus['points'];
+                                            $bus[$i] = $get_bus['total'];
 
-                                            //if both exist
-                                            if($get_bio[$i] && $get_phy[$i])
+                                            //geography
+                                            $sql = "SELECT points,total FROM results WHERE subject='Geography' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_geo = mysqli_fetch_array($exe);
+                                            $geography[$i] = $get_geo['points'];
+                                            $geo[$i] = $get_geo['total'];
+
+                                            //history
+                                            $sql = "SELECT points,total FROM results WHERE subject='History' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_hist = mysqli_fetch_array($exe);
+                                            $history[$i] = $get_hist['points'];
+                                            $his[$i] = $get_hist['total'];
+
+                                            //cre
+                                            $sql = "SELECT points,total FROM results WHERE subject='CRE' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_cre = mysqli_fetch_array($exe);
+                                            $cre[$i] = $get_cre['points'];
+                                            $cr[$i] = $get_cre['total'];
+
+                                            if($get_chem && $get_bio && $get_phy && ($get_bus || $get_agri))
                                             {
-                                                foreach($get_phy[$i] as $row)
+                                                if($get_bus)
                                                 {
-                                                    $physics[$i] = $row['total'];
-                                                    $physics_points[$i] = $row['points'];
-                                                    $physics_one[$i] = $row['mid'];
+                                                    $technical[$i] = $business[$i];
+                                                    $technical_mark[$i] = $bus[$i];
                                                 }
-                                                foreach($get_bio[$i] as $row)
+                                                if($get_agri)
                                                 {
-                                                    $biology[$i] = $row['total'];
-                                                    $biology_points[$i] = $row['points'];
-                                                    $biology_one[$i]= $row['mid'];
+                                                    $technical[$i] = $agriculture[$i];
+                                                    $technical_mark[$i] = $agri[$i];
                                                 }
 
-                                                //remove the existing from total if business and agric exist
+                                                $lowest_science[$i] = min($chemistry[$i],$physics[$i],$biology[$i],$technical[$i]);
+                                                $lowest_science_mark[$i] = min($chem[$i],$phy[$i],$bio[$i],$technical_mark[$i]);
+                                                $points[$i] = $points[$i] - $lowest_science[$i];
+                                                $total_mark[$i] = $total_mark[$i]  - $lowest_science_mark[$i];
 
-                                                if($get_agric[$i] || $get_bus[$i])
-                                                {
-                                                //pick the 2 highest
-                                                $sciences[$i] = array($biology[$i],$physics[$i],$temp[$i]);
-                                                $sciences_one[$i] = array($biology_one[$i],$physics_one[$i],$cycle_one[$i]);
-                                                rsort($sciences[$i]);
-                                                rsort($sciences_one[$i]);
-                                                $first[$i] = $sciences[$i][0];
-                                                $first_one[$i] = $sciences_one[$i][0];
-                                                $second[$i] = $sciences[$i][1];
-                                                $second_one[$i] = $sciences_one[$i][1];
-                                                //deduct the lowest
-
-                                                $total_mark[$i] = $total_mark[$i] - $first[$i] - $second[$i] - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - $first_one[$i] - $second_one[$i] - $cycle_one[$i];
-
-                                                $highest[$i] = array($physics[$i],$biology[$i],$total[$i]);
-                                                $highest_one[$i] = array($physics_one[$i],$biology_one[$i],$cycle_one[$i]);
-                                                rsort($highest[$i]);
-                                                rsort($highest_one[$i]);
-                                                $first[$i] = $highest[$i][0];
-                                                $first_one[$i] = $highest_one[$i][0];
-                                                $second[$i] = $highest[$i][1];
-                                                $second_one[$i] = $highest_one[$i][1];
-                                                $lowest[$i] = $highest[$i][2];
-                                                $lowest_one[$i] = $highest_one[$i][2];
-
-                                                $total_mark[$i] = $total_mark[$i] + $first[$i] + $second[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] + $first_one[$i] + $second_one[$i];
-
-                                                //calculate points
-                                                $sci_points[$i] = array($biology_points[$i],$physics_points[$i],$current_points[$i]);
-
-
-
-                                                    if($get_agric[$i])
-                                                    {
-                                                        foreach($get_agric[$i] as $row)
-                                                        {
-                                                            $technical[$i] = $row['total'];
-                                                            $technical_points[$i] = $row['points'];
-                                                            $technical_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-                                                    if($get_bus[$i])
-                                                    {
-                                                        foreach($get_bus[$i] as $row)
-                                                        {
-                                                            $technical[$i] = $row['total'];
-                                                            $technical_points[$i] = $row['points'];
-                                                            $technical_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-
-                                                    if($lowest[$i] > $technical[$i])
-                                                    {
-                                                        $total_mark[$i] = $total_mark[$i] - $technical[$i] + $lowest[$i];
-                                                        $tpoints[$i] = $tpoints[$i] - $technical_points[$i] + $lowest_point[$i];
-                                                    }
-                                                    else
-                                                    {
-                                                        $tpoints[$i] = $tpoints[$i] + $technical_points[$i] - $lowest_point[$i];
-                                                    }
-                                                    if($lowest_one[$i] > $technical_one[$i])
-                                                    {
-                                                        $total_mark_one[$i] = $total_mark_one[$i] - $technical_one[$i] + $lowest_one[$i];
-                                                    }
-                                                }
                                             }
-                                        }
-
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Biology')
-                                        {
-                                            //check if physics and chemistry exist
-
-                                            $where = array('subject'=>'Chemistry','admission'=>$admission[$i],'period'=>$period);
-                                            $get_chem[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Physics','admission'=>$admission[$i],'period'=>$period);
-                                            $get_phy[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Agriculture','admission'=>$admission[$i],'period'=>$period);
-                                            $get_agric[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Business','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bus[$i] = $obj->fetch_records('results',$where);
-
-                                            //if both exist
-                                            if($get_chem[$i] && $get_phy[$i])
+                                            if($get_cre || $get_geo || $get_hist)
                                             {
-                                                foreach($get_phy[$i] as $row)
-                                                {
-                                                    $physics[$i] = $row['total'];
-                                                    $physics_points[$i] = $row['points'];
-                                                    $physics_one[$i] = $row['mid'];
-                                                }
-                                                foreach($get_chem[$i] as $row)
-                                                {
-                                                    $chemistry[$i] = $row['total'];
-                                                    $chemistry_points[$i] = $row['points'];
-                                                    $chemistry_one[$i] = $row['mid'];
-                                                }
-
-                                                if($get_agric[$i] || $get_bus[$i])
-                                                {
-
-
-                                                    //pick the 2 highest
-                                                $sciences[$i] = array($chemistry[$i],$physics[$i],$temp[$i]);
-                                                $sciences_one[$i] = array($chemistry_one[$i],$physics_one[$i],$cycle_one[$i]);
-                                                rsort($sciences[$i]);
-                                                rsort($sciences_one[$i]);
-                                                $first[$i] = $sciences[$i][0];
-                                                $first_one[$i] = $sciences_one[$i][0];
-                                                $second[$i] = $sciences[$i][1];
-                                                $second_one[$i] = $sciences_one[$i][1];
-                                                //deduct the lowest
-
-                                                $total_mark[$i] = $total_mark[$i] - $first[$i] - $second[$i] - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - $first_one[$i] - $second_one[$i] - $cycle_one[$i];
-
-                                                $highest[$i] = array($physics[$i],$chemistry[$i],$total[$i]);
-                                                $highest_one[$i] = array($physics_one[$i],$chemistry_one[$i],$cycle_one[$i]);
-                                                rsort($highest[$i]);
-                                                rsort($highest_one[$i]);
-                                                $first[$i] = $highest[$i][0];
-                                                $first_one[$i] = $highest_one[$i][0];
-                                                $second[$i] = $highest[$i][1];
-                                                $second_one[$i] = $highest_one[$i][1];
-                                                $lowest[$i] = $highest[$i][2];
-                                                $lowest_one[$i] = $highest_one[$i][2];
-
-                                                $total_mark[$i] = $total_mark[$i] + $first[$i] + $second[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] + $first_one[$i] + $second_one[$i];
-
-                                                $sci_points[$i] = array($chemistry_points[$i],$physics_points[$i],$current_points[$i]);
-                                                rsort($sci_points[$i]);
-                                                $lowest_point[$i] = $sci_points[$i][2];
-                                                $tpoints[$i] = $tpoints[$i] - $lowest_point[$i];
-
-
-                                                    if($get_agric[$i])
-                                                    {
-                                                        foreach($get_agric[$i] as $row)
-                                                        {
-                                                            $technical[$i] = $row['total'];
-                                                            $technical_points[$i] = $row['points'];
-                                                            $technical_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-                                                    if($get_bus[$i])
-                                                    {
-                                                        foreach($get_bus[$i] as $row)
-                                                        {
-                                                            $technical[$i] = $row['total'];
-                                                            $technical_points[$i] = $row['points'];
-                                                            $technical_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-
-                                                    if($lowest[$i] > $technical[$i])
-                                                    {
-                                                        $total_mark[$i] = $total_mark[$i] - $technical[$i] + $lowest[$i];
-                                                        $tpoints[$i] = $tpoints[$i] - $technical_points[$i] + $lowest_point[$i];
-                                                    }
-                                                    if($lowest_one[$i] > $technical_one[$i])
-                                                    {
-                                                        $total_mark_one[$i] = $total_mark_one[$i] - $technical_one[$i] + $lowest_one[$i];
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Physics')
-                                        {
-                                            //check if biology and chemistry exist
-
-                                            $where = array('subject'=>'Biology','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bio[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Chemistry','admission'=>$admission[$i],'period'=>$period);
-                                            $get_chem[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Agriculture','admission'=>$admission[$i],'period'=>$period);
-                                            $get_agric[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Business','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bus[$i] = $obj->fetch_records('results',$where);
-
-
-                                            //if both exist
-                                            if($get_bio[$i] && $get_chem[$i])
-                                            {
-                                                foreach($get_bio[$i] as $row)
-                                                {
-                                                    $biology[$i] = $row['total'];
-                                                    $biology_one[$i] = $row['mid'];
-                                                    $biology_points[$i] = $row['points'];
-                                                }
-                                                foreach($get_chem[$i] as $row)
-                                                {
-                                                    $chemistry[$i] = $row['total'];
-                                                    $chemistry_points[$i] = $row['points'];
-                                                    $chemistry_one[$i] = $row['mid'];
-                                                }
-
-                                                if($get_agric[$i] || $get_bus[$i])
-                                                {
-
-                                                    //pick the 2 highest
-                                                    $sciences[$i] = array($biology[$i],$chemistry[$i],$temp[$i]);
-                                                    $sciences_one[$i] = array($biology_one[$i],$chemistry_one[$i],$cycle_one[$i]);
-                                                    rsort($sciences[$i]);
-                                                    rsort($sciences_one[$i]);
-                                                    $first[$i] = $sciences[$i][0];
-                                                    $first_one[$i] = $sciences_one[$i][0];
-                                                    $second[$i] = $sciences[$i][1];
-                                                    $second_one[$i] = $sciences_one[$i][1];
-                                                    //deduct the lowest
-
-                                                    $total_mark[$i] = $total_mark[$i] - $first[$i] - $second[$i] - $mark[$i];
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - $first_one[$i] - $second_one[$i] - $cycle_one[$i];
-
-                                                    $highest[$i] = array($chemistry[$i],$biology[$i],$total[$i]);
-                                                    $highest_one[$i] = array($chemistry_one[$i],$biology_one[$i],$cycle_one[$i]);
-                                                    rsort($highest[$i]);
-                                                    rsort($highest_one[$i]);
-                                                    $first[$i] = $highest[$i][0];
-                                                    $first_one[$i] = $highest_one[$i][0];
-                                                    $second[$i] = $highest[$i][1];
-                                                    $second_one[$i] = $highest_one[$i][1];
-                                                    $lowest[$i] = $highest[$i][2];
-                                                    $lowest_one[$i] = $highest_one[$i][2];
-
-                                                    $total_mark[$i] = $total_mark[$i] + $first[$i] + $second[$i];
-                                                    $total_mark_one[$i] = $total_mark_one[$i] + $first_one[$i] + $second_one[$i];
-
-                                                    $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$current_points[$i]);
-                                                    rsort($sci_points[$i]);
-                                                    $lowest_point[$i] = $sci_points[$i][2];
-                                                    $tpoints[$i] = $tpoints[$i] - $lowest_point[$i];
-
-                                                    if($get_agric[$i])
-                                                    {
-                                                        foreach($get_agric[$i] as $row)
-                                                        {
-                                                            $technical[$i] = $row['total'];
-                                                            $technical_points[$i] = $row['points'];
-                                                            $technical_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-                                                    if($get_bus[$i])
-                                                    {
-                                                        foreach($get_bus[$i] as $row)
-                                                        {
-                                                            $technical[$i] = $row['total'];
-                                                            $technical_points[$i] = $row['points'];
-                                                            $technical_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-
-                                                    if($lowest[$i] > $technical[$i])
-                                                    {
-                                                        $total_mark[$i] = $total_mark[$i] - $technical[$i] + $lowest[$i];
-                                                        $tpoints[$i] = $tpoints[$i] - $technical_points[$i] + $lowest_point[$i];
-                                                    }
-                                                    if($lowest_one[$i] > $technical_one[$i])
-                                                    {
-                                                        $total_mark_one[$i] = $total_mark_one[$i] - $technical_one[$i] + $lowest_one[$i];
-                                                    }
-                                                }
+                                                $points[$i] = $points[$i] - $history[$i] - $cre[$i] - $geography[$i];
+                                                $total_mark[$i]  = $total_mark[$i]  - $his[$i] - $cr[$i] - $geo[$i];
+                                                $points[$i] = $points[$i] + max($history[$i],$cre[$i],$geography[$i]);
+                                                $total_mark[$i] = $total_mark[$i] + max($his[$i],$cr[$i],$geo[$i]);
 
                                             }
                                         }
 
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'History')
-                                        {
-                                            //check if cre and geog exist
-                                            $where = array('subject'=>'CRE','admission'=>$admission[$i],'period'=>$period);
-                                            $get_cre[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Geography','admission'=>$admission[$i],'period'=>$period);
-                                            $get_geo[$i] = $obj->fetch_records('results',$where);
 
-                                            //if cre exists but not geography
-                                            if($get_cre[$i] && !$get_geo[$i])
-                                            {
-                                                foreach($get_cre[$i] as $row)
-                                                {
-                                                    $cre[$i] = $row['total'];
-                                                    $cre_points[$i] = $row['points'];
-                                                    $cre_one[$i] = $row['mid'];
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($cre[$i],$temp[$i]);
-                                                $humanities_one[$i] = array($cre_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($humanities[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($humanities_ones[$i]) - $cycle_one[$i];
-                                                //total points
-
-                                                //pick highest after update
-                                                $highest[$i] = array($cre[$i],$total[$i]);
-                                                $highest_one[$i] = array($cre_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($highest[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($highest_one[$i]);
-
-                                                if($cre[$i]<$total[$i])
-                                                {
-                                                    $tpoints[$i] = $tpoints[$i] + $current_points[$i] - $cre_points[$i];
-                                                }
-                                            }
-
-                                            //if geography exists but not cre
-                                            if($get_geo[$i] && !$get_cre[$i] )
-                                            {
-                                                foreach($get_geo[$i] as $row)
-                                                {
-                                                    $geo[$i] = $row['total'];
-                                                    $geo_points[$i] = $row['points'];
-                                                    $geo_one[$i] = $row['mid'];
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($geo[$i],$temp[$i]);
-                                                $humanities_one[$i] = array($geo_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($humanities[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($humanities_one[$i]) - $cycle_one[$i];
-
-                                                //total points
-
-
-                                                //pick highest after update
-                                                $highest[$i] = array($geo[$i],$total[$i]);
-                                                $highest_one[$i] = array($geo_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($highest[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($highest_one[$i]);
-
-                                                if($geo[$i]<$total[$i])
-                                                {
-                                                    $tpoints[$i] = $tpoints[$i] + $current_points[$i] - $geo_points[$i];
-                                                }
-                                            }
-                                            if($get_cre[$i] && $get_geo[$i])
-                                            {
-                                                foreach($get_geo[$i] as $row)
-                                                {
-                                                    $geo[$i] = $row['total'];
-                                                    $geo_points[$i] = $row['points'];
-                                                    $geo_one[$i] = $row['mid'];
-                                                }
-                                                foreach($get_cre[$i] as $row)
-                                                {
-                                                    $cre[$i] = $row['total'];
-                                                    $cre_points[$i] = $row['points'];
-                                                    $cre_one[$i] = $row['mid'];
-                                                }
-
-                                                //pick only the highest humanity and add to the total
-                                                $geocre[$i] = array($cre[$i],$geo[$i],$temp[$i]);
-                                                $geocre_one[$i] = array($cre_one[$i],$geo_one[$i],$cre_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($geocre[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($geocre_one[$i]) - $cycle_one[$i];
-                                                $humanities[$i] = array($total[$i],$geo[$i],$cre[$i]);
-                                                $humanities_one[$i] = array($cycle_one[$i],$geo_one[$i],$cre_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($humanities[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($humanities_one[$i]);
-
-                                                $tpoints[$i] = $tpoints[$i]+$current_points[$i];
-                                                $hum_points[$i] = array($geo_points[$i],$cre_points[$i],$current_points[$i]);
-                                                rsort($hum_points[$i]);
-                                                $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
-                                            }
-
-                                        }
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Geography')
-                                        {
-                                            //check if cre and hist exist
-                                            $where = array('subject'=>'CRE','admission'=>$admission[$i],'period'=>$period);
-                                            $get_cre[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'History','admission'=>$admission[$i],'period'=>$period);
-                                            $get_hist[$i] = $obj->fetch_records('results',$where);
-
-                                            //if cre exists but not geography
-                                            if($get_cre[$i] && !$get_hist[$i])
-                                            {
-                                                foreach($get_cre[$i] as $row)
-                                                {
-                                                    $cre[$i] = $row['total'];
-                                                    $cre_points[$i] = $row['points'];
-                                                    $cre_one[$i] = $row['mid'];
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($cre[$i],$temp[$i]);
-                                                $humanities_one[$i] = array($cre_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($humanities[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($humanities_one[$i]) - $cycle_one[$i];
-
-                                                //total points
-
-
-                                                //pick highest after update
-                                                $highest[$i] = array($cre[$i],$total[$i]);
-                                                $highest_one[$i] = array($cre_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($highest[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($highest_one[$i]);
-
-                                                if($cre[$i]<$total[$i])
-                                                {
-                                                    $tpoints[$i] = $tpoints[$i] + $current_points[$i] - $cre_points[$i];
-                                                }
-                                            }
-
-                                            //if geography exists but not cre
-                                            if($get_hist[$i] && !$get_cre[$i] )
-                                            {
-                                                foreach($get_hist[$i] as $row)
-                                                {
-                                                    $his[$i] = $row['total'];
-                                                    $his_points[$i] = $row['points'];
-                                                    $his_one[$i] = $row['mid'];
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($his[$i],$temp[$i]);
-                                                $humanities_one[$i] = array($his_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($humanities[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($humanities_one[$i]) - $cycle_one[$i];
-
-                                                //total points
-
-
-                                                //pick highest after update
-                                                $highest[$i] = array($his[$i],$total[$i]);
-                                                $highest_one[$i] = array($his_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($highest[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($highest_one[$i]);
-
-                                                if($his[$i]<$total[$i])
-                                                {
-                                                    $tpoints[$i] = $tpoints[$i] + $current_points[$i] - $his_points[$i];
-                                                }
-                                            }
-                                            if($get_cre[$i] && $get_hist[$i])
-                                            {
-                                                foreach($get_hist[$i] as $row)
-                                                {
-                                                    $his[$i] = $row['total'];
-                                                    $his_points[$i] = $row['points'];
-                                                    $his_one[$i] = $row['mid'];
-                                                }
-                                                foreach($get_cre[$i] as $row)
-                                                {
-                                                    $cre[$i] = $row['total'];
-                                                    $cre_points[$i] = $row['points'];
-                                                    $cre_one[$i] = $row['mid'];
-                                                }
-
-                                                //pick only the highest humanity and add to the total
-                                                $hiscre[$i] = array($cre[$i],$his[$i],$temp[$i]);
-                                                $hiscre_one[$i] = array($cre_one[$i],$his_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($hiscre[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($hiscre_one[$i]) - $cycle_one[$i];
-                                                $humanities[$i] = array($total[$i],$his[$i],$cre[$i]);
-                                                $humanities_one[$i] = array($cycle_one[$i],$his_one[$i],$cre_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($humanities[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($humanities_one[$i]);
-
-                                                $tpoints[$i] = $tpoints[$i] + $current_points[$i];
-                                                $hum_points[$i] = array($his_points[$i],$cre_points[$i],$current_points[$i]);
-                                                rsort($hum_points[$i]);
-                                                $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
-                                            }
-                                        }
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'CRE')
-                                        {
-                                            //check if geo and hist exist
-                                            $where = array('subject'=>'Geography','admission'=>$admission[$i],'period'=>$period);
-                                            $get_geo[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'History','admission'=>$admission[$i],'period'=>$period);
-                                            $get_hist[$i] = $obj->fetch_records('results',$where);
-
-                                            //if geo exists but not his
-                                            if($get_geo[$i] && !$get_hist[$i])
-                                            {
-                                                foreach($get_geo[$i] as $row)
-                                                {
-                                                    $geo[$i] = $row['total'];
-                                                    $geo_points[$i] = $row['points'];
-                                                    $geo_one[$i] = $row['mid'];
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($geo[$i],$temp[$i]);
-                                                $humanities_one[$i] = array($geo_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($humanities[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($humanities_one[$i]) - $cycle_one[$i];
-
-                                                //total points
-
-
-                                                //pick highest after update
-                                                $highest[$i] = array($geo[$i],$total[$i]);
-                                                $highest_one[$i] = array($geo_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($highest[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($highest_one[$i]);
-
-                                                if($geo[$i]<$total[$i])
-                                                {
-                                                    $tpoints[$i] = $tpoints[$i] + $current_points[$i] - $geo_points[$i];
-                                                }
-
-                                            }
-
-                                            //if geography exists but not cre
-                                            if($get_hist[$i] && !$get_geo[$i] )
-                                            {
-                                                foreach($get_hist[$i] as $row)
-                                                {
-                                                    $his[$i] = $row['total'];
-                                                    $his_points[$i] = $row['points'];
-                                                    $his_one[$i] = $row['mid'];
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($his[$i],$temp[$i]);
-                                                $humanities_one[$i] = array($his_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($humanities[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($humanities_one[$i]) - $cycle_one[$i];
-
-                                                //total points
-
-                                                //pick highest after update
-                                                $highest[$i] = array($his[$i],$total[$i]);
-                                                $highest_one[$i] = array($his_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($highest[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($highest_one[$i]);
-
-                                                if($his[$i]<$total[$i])
-                                                {
-                                                    $tpoints[$i] = $tpoints[$i] + $current_points[$i] - $his_points[$i];
-                                                }
-                                            }
-                                            if($get_geo[$i] && $get_hist[$i])
-                                            {
-                                                foreach($get_hist[$i] as $row)
-                                                {
-                                                    $his[$i] = $row['total'];
-                                                    $his_one[$i] = $row['mid'];
-                                                    $his_points[$i] = $row['points'];
-                                                }
-                                                foreach($get_geo[$i] as $row)
-                                                {
-                                                    $geo[$i] = $row['total'];
-                                                    $geo_one[$i] = $row['mid'];
-                                                    $geo_points[$i] = $row['points'];
-                                                }
-
-                                                //pick only the highest humanity and add to the total
-                                                $hisgeo[$i] = array($his[$i],$geo[$i],$temp[$i]);
-                                                $hisgeo_one[$i] = array($his_one[$i],$geo_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($hiscre[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($hiscre_one[$i]) - $cycle_one[$i];
-                                                $humanities[$i] = array($total[$i],$geo[$i],$his[$i]);
-                                                $humanities_one[$i] = array($cycle_one[$i],$geo_one[$i],$his_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($humanities[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($humanities_one[$i]);
-
-                                                $tpoints[$i] = $tpoints[$i] + $current_points[$i];
-                                                $hum_points[$i] = array($his_points[$i],$geo_points[$i],$current_points[$i]);
-                                                rsort($hum_points[$i]);
-                                                $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
-                                            }
-                                        }
-
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Agriculture')
-                                        {
-                                            //check if 3 sciences exist
-                                            //check if physics and chemistry exist
-
-                                            $where = array('subject'=>'Chemistry','admission'=>$admission[$i],'period'=>$period);
-                                            $get_chem[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Physics','admission'=>$admission[$i],'period'=>$period);
-                                            $get_phy[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Biology','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bio[$i] = $obj->fetch_records('results',$where);
-
-                                            //if both exist
-                                            if($get_chem[$i] && $get_phy[$i] && $get_bio[$i])
-                                            {
-                                                foreach($get_phy[$i] as $row)
-                                                {
-                                                    $physics[$i] = $row['total'];
-                                                    $physics_one[$i] = $row['mid'];
-                                                    $physics_points[$i] = $row['points'];
-                                                }
-                                                foreach($get_chem[$i] as $row)
-                                                {
-                                                    $chemistry[$i] = $row['total'];
-                                                    $chemistry_one[$i] = $row['mid'];
-                                                    $chemistry_points[$i] = $row['points'];
-                                                }
-                                                foreach($get_bio[$i] as $row)
-                                                {
-                                                    $biology[$i] = $row['total'];
-                                                    $biology_one[$i] = $row['mid'];
-                                                    $biology_points[$i] = $row['points'];
-                                                }
-
-                                                //check lowest science
-                                                $sciences[$i] = array($chemistry[$i],$physics[$i],$biology[$i]);
-                                                $sciences_one[$i] = array($chemistry_one[$i],$physics_one[$i],$biology_one[$i]);
-
-                                                $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$physics_points[$i]);
-
-
-                                                $lowest[$i] = min($sciences[$i]);
-                                                $lowest_one[$i] = min($sciences_one[$i]);
-
-                                                //calculate points
-                                                if($lowest[$i] < $total[$i])
-                                                {
-                                                    $tpoints[$i]= $tpoints[$i] - min($sci_points[$i]) + $current_points[$i];
-
-                                                }
-
-
-                                                //compare lowest to agriculture
-                                                if($lowest[$i] >= $temp[$i])
-                                                {
-                                                    $total_mark[$i] = $total_mark[$i] - $lowest[$i];
-
-
-                                                    if($lowest[$i] > $total[$i])
-                                                    {
-                                                        $total_mark[$i] = $total_mark[$i] - $mark[$i];
-                                                        $total_mark[$i] = $total_mark[$i] + $lowest[$i];
-                                                    }
-                                                    else{
-                                                        $total_mark[$i] = $total_mark[$i] - $mark[$i];
-                                                        $total_mark[$i] = $total_mark[$i] + $total[$i];
-                                                    }
-                                                }
-                                                else if($lowest[$i] < $temp[$i])
-                                                {
-                                                    //deduct the lowest
-                                                    $total_mark[$i] = $total_mark[$i] - $temp[$i];
-
-
-                                                    if($lowest[$i] > $total[$i])
-                                                    {
-                                                        $total_mark[$i] = $total_mark[$i] - $mark[$i];
-                                                        $total_mark[$i] = $total_mark[$i] + $lowest[$i];
-                                                    }
-                                                    else{
-                                                        $total_mark[$i] = $total_mark[$i] - $mark[$i];
-                                                        $total_mark[$i] = $total_mark[$i] + $total[$i];
-                                                    }
-
-                                                }
-
-                                                if($lowest_one[$i] >= $cycle_one[$i])
-                                                {
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - $cycle_one[$i];
-                                                    $total_mark_one[$i] = $total_mark_one[$i] + $lowest_one[$i];
-                                                }
-                                                else if($lowest_one[$i] < $cycle_one[$i])
-                                                {
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - $lowest_one[$i];
-                                                }
-
-                                            }
-
-                                        }
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Business')
-                                        {
-                                            //check if 3 sciences exist
-
-                                            $where = array('subject'=>'Chemistry','admission'=>$admission[$i],'period'=>$period);
-                                            $get_chem[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Physics','admission'=>$admission[$i],'period'=>$period);
-                                            $get_phy[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Biology','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bio[$i] = $obj->fetch_records('results',$where);
-
-                                            //if both exist
-                                            if($get_chem[$i] && $get_phy[$i] && $get_bio[$i])
-                                            {
-                                                foreach($get_phy[$i] as $row)
-                                                {
-                                                    $physics[$i] = $row['total'];
-                                                    $physics_one[$i] = $row['mid'];
-                                                    $physics_points = $row['points'];
-
-                                                }
-                                                foreach($get_chem[$i] as $row)
-                                                {
-                                                    $chemistry[$i] = $row['total'];
-                                                    $chemistry_one[$i] = $row['mid'];
-                                                    $chemistry_points[$i] = $row['points'];
-                                                }
-                                                foreach($get_bio[$i] as $row)
-                                                {
-                                                    $biology[$i] = $row['total'];
-                                                    $biology_one[$i] = $row['mid'];
-                                                    $biology_points[$i] = $row['points'];
-                                                }
-
-                                                //check lowest science
-                                                $sciences[$i] = array($chemistry[$i],$physics[$i],$biology[$i]);
-                                                $sciences_one[$i] = array($chemistry_one[$i],$physics_one[$i],$biology_one[$i]);
-
-                                                $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$physics_points[$i]);
-
-
-                                                $lowest[$i] = min($sciences[$i]);
-                                                $lowest_one[$i] = min($sciences_one[$i]);
-
-                                                //calculate points
-                                                if($lowest[$i] < $total[$i])
-                                                {
-                                                    $tpoints[$i]= $tpoints[$i] - min($sci_points[$i]) + $current_points[$i];
-
-                                                }
-
-                                                //compare lowest to business
-                                                if($lowest[$i] >= $temp[$i])
-                                                {
-                                                    $total_mark[$i] = $total_mark[$i] - $lowest[$i];
-
-
-                                                    if($lowest[$i] > $total[$i])
-                                                    {
-                                                        $total_mark[$i] = $total_mark[$i] - $mark[$i];
-                                                        $total_mark[$i] = $total_mark[$i] + $lowest[$i];
-                                                    }
-                                                    else{
-                                                        $total_mark[$i] = $total_mark[$i] - $mark[$i];
-                                                        $total_mark[$i] = $total_mark[$i] + $total[$i];
-                                                    }
-                                                }
-                                                else if($lowest[$i] < $temp[$i])
-                                                {
-                                                    //deduct the lowest
-                                                    $total_mark[$i] = $total_mark[$i] - $temp[$i];
-
-
-                                                    if($lowest[$i] > $total[$i])
-                                                    {
-                                                        $total_mark[$i] = $total_mark[$i] - $mark[$i];
-                                                        $total_mark[$i] = $total_mark[$i] + $lowest[$i];
-                                                    }
-                                                    else{
-
-                                                        $total_mark[$i] = $total_mark[$i] - $mark[$i];
-                                                        $total_mark[$i] = $total_mark[$i] + $total[$i];
-                                                    }
-
-                                                }
-
-
-                                                if($lowest_one[$i] >= $cycle_one[$i])
-                                                {
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - $cycle_one[$i];
-                                                    $total_mark_one[$i] = $total_mark_one[$i] + $lowest_one[$i];
-                                                }
-                                                else if($lowest_one[$i] < $cycle_one[$i])
-                                                {
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - $lowest_one[$i];
-                                                }
-
-                                            }
-
-                                        }
-                                        $average[$i]=$total_mark[$i]/$min;
-
-                                        $average_points[$i] = $tpoints[$i]/$min;
+                                        $average_points[$i] = $points[$i]/$min;
+                                        $average[$i] = $total_mark[$i]/$min;
 
                                         //get new grade
-                                        $sql = "SELECT * FROM $grading_system WHERE upper_limit>=$tpoints[$i] AND lower_limit<=$tpoints[$i]";
+                                        $sql = "SELECT * FROM $grading_system WHERE upper_limit>=$points[$i] AND lower_limit<=$points[$i]";
                                         $execute = mysqli_query($obj->con, $sql);
 
                                         if ($execute) {
@@ -1008,6 +269,8 @@ if($_SESSION['account'])
                                         }
                                         //data update in final results table
 
+
+
                                         //updating data to results table
                                         $data = array(
 
@@ -1016,7 +279,7 @@ if($_SESSION['account'])
                                             "average" => $average[$i],
                                             "grade" => $grade[$i],
                                             "points" => $avpoints[$i],
-                                            "total_points"=>$tpoints[$i],
+                                            "total_points"=>$points[$i],
                                             "average_points"=>$average_points[$i],
                                             "remarks" => $remarks[$i]
 
@@ -1025,19 +288,115 @@ if($_SESSION['account'])
 
                                         if ($obj->update_record("final_result", $where, $data)) {
 
-                                            if($get_cycle_one)
+                                            if($get_cycle_two)
                                             {
-                                                $average_one[$i]=$total_mark_one[$i]/$min;
-                                                //get new grade
-                                                $sql = "SELECT * FROM $grading_system WHERE upper_limit>=floor($average_one[$i]) AND lower_limit<=floor($average_one[$i])";
+                                                //grading algorithm
+                                                $sql = "SELECT sum(mid_points),sum(mid) FROM results WHERE admission='$admission[$i]'  AND period = '$period'";
+                                                $exe = mysqli_query($obj->con,$sql);
+                                                $get_points = mysqli_fetch_array($exe);
+                                                $points[$i] = $get_points['sum(mid_points)'];
+                                                $total_mark[$i] = $get_points['sum(mid)'];
+
+                                                if(($form>=3 || ($form==2 && $term==3)))
+                                                {
+                                                    //biology
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Biology' AND admission='$admission[$i]' AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_bio = mysqli_fetch_array($exe);
+                                                    $biology[$i] = $get_bio['mid_points'];
+                                                    $bio[$i] = $get_bio['mid'];
+                                                    //physics
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Physics' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_phy = mysqli_fetch_array($exe);
+                                                    $physics[$i] = $get_phy['mid_points'];
+                                                    $phy[$i] = $get_phy['mid'];
+
+                                                    //chemistry
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Chemistry' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_chem = mysqli_fetch_array($exe);
+                                                    $chemistry[$i] = $get_chem['mid_points'];
+                                                    $chem[$i] = $get_chem['mid'];
+
+
+                                                    //agriculture
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Agriculture' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_agri = mysqli_fetch_array($exe);
+                                                    $agriculture[$i] = $get_agri['mid_points'];
+                                                    $agri[$i] = $get_agri['mid'];
+
+                                                    //business
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Business' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_bus = mysqli_fetch_array($exe);
+                                                    $business[$i] = $get_bus['mid_points'];
+                                                    $bus[$i] = $get_bus['mid'];
+
+                                                    //geography
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Geography' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_geo = mysqli_fetch_array($exe);
+                                                    $geography[$i] = $get_geo['mid_points'];
+                                                    $geo[$i] = $get_geo['mid'];
+
+                                                    //history
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='History' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_hist = mysqli_fetch_array($exe);
+                                                    $history[$i] = $get_hist['mid_points'];
+                                                    $his[$i] = $get_hist['mid'];
+
+                                                    //cre
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='CRE' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_cre = mysqli_fetch_array($exe);
+                                                    $cre[$i] = $get_cre['mid_points'];
+                                                    $cr[$i] = $get_cre['mid'];
+
+                                                    if($get_chem && $get_bio && $get_phy && ($get_bus || $get_agri))
+                                                    {
+                                                        if($get_bus)
+                                                        {
+                                                            $technical[$i] = $business[$i];
+                                                            $technical_mark[$i] = $bus[$i];
+                                                        }
+                                                        if($get_agri)
+                                                        {
+                                                            $technical[$i] = $agriculture[$i];
+                                                            $technical_mark[$i] = $agri[$i];
+                                                        }
+
+                                                        $lowest_science[$i] = min($chemistry[$i],$physics[$i],$biology[$i],$technical[$i]);
+                                                        $lowest_science_mark[$i] = min($chem[$i],$phy[$i],$bio[$i],$technical_mark[$i]);
+                                                        $points[$i] = $points[$i] - $lowest_science[$i];
+                                                        $total_mark[$i] = $total_mark[$i]  - $lowest_science_mark[$i];
+
+                                                    }
+                                                    if($get_cre || $get_geo || $get_hist)
+                                                    {
+                                                        $points[$i] = $points[$i] - $history[$i] - $cre[$i] - $geography[$i];
+                                                        $total_mark[$i]  = $total_mark[$i]  - $his[$i] - $cr[$i] - $geo[$i];
+                                                        $points[$i] = $points[$i] + max($history[$i],$cre[$i],$geography[$i]);
+                                                        $total_mark[$i] = $total_mark[$i] + max($his[$i],$cr[$i],$geo[$i]);
+
+                                                    }
+                                                }
+
+                                                //calculate the grade
+                                                $average[$i]=$total_mark[$i]/$min;
+                                                $average_points[$i] = $points[$i] / $min;
+
+                                                $sql = "SELECT * FROM $grading_system WHERE upper_limit>=$points[$i] AND lower_limit<=$points[$i]";
                                                 $execute = mysqli_query($obj->con, $sql);
 
                                                 if ($execute) {
 
                                                     while ($get_grades = mysqli_fetch_assoc($execute)) {
-                                                        $grade_one[$i] = $get_grades['grade'];
-                                                        $points_one[$i] = $get_grades['points'];
-                                                        $remarks_one[$i] = $get_grades['remarks'];
+                                                        $grade[$i] = $get_grades['grade'];
+                                                        $avpoints[$i] = $get_grades['points'];
+                                                        $remarks[$i] = $get_grades['remarks'];
                                                     }
                                                 }
                                                 //data update in final results table
@@ -1045,13 +404,14 @@ if($_SESSION['account'])
                                                 //updating data to results table
                                                 $data = array(
 
-                                                    $subject => $cycle_one[$i],
-                                                    "total" => $total_mark_one[$i],
-                                                    "cumulative"=>$total_mark[$i],
-                                                    "average" => $average_one[$i],
-                                                    "grade" => $grade_one[$i],
-                                                    "points" => $points_one[$i],
-                                                    "remarks" => $remarks_one[$i]
+                                                    $subject => $cycle_two[$i],
+                                                    "total" => $total_mark[$i],
+                                                    "average" => $average[$i],
+                                                    "grade" => $grade[$i],
+                                                    "points" => $avpoints[$i],
+                                                    "total_points"=> $points[$i],
+                                                    "average_points"=>$average_points[$i],
+                                                    "remarks" => $remarks[$i]
 
                                                 );
                                                 $where = array("admission" => $admission[$i], "period" => $period);
@@ -1061,11 +421,10 @@ if($_SESSION['account'])
                                                     $success = "Exam results for form $class in $period have been uploaded successfully";
 
                                                 }
-
                                             }
                                             else{
 
-                                                $average[$i]=$cycle_one[$i]/$min;
+                                                $average[$i]=$cycle_two[$i]/$min;
 
                                                 $sql_grade = "SELECT * FROM $grading_system WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
                                                 $execute_grade = mysqli_query($obj->con, $sql_grade);
@@ -1085,9 +444,9 @@ if($_SESSION['account'])
                                                     "class" => $class,
                                                     "form" =>$class[0],
                                                     "period" => $period,
-                                                    $subject => $cycle_one[$i],
-                                                    "total" => $cycle_one[$i],
-                                                    "cumulative"=>$cycle_one[$i],
+                                                    $subject => $cycle_two[$i],
+                                                    "total" => $cycle_two[$i],
+                                                    "cumulative"=>$cycle_two[$i],
                                                     "count" => 1,
                                                     "average" => $average[$i],
                                                     "grade" =>$grade[$i],
@@ -1123,16 +482,17 @@ if($_SESSION['account'])
                                 while ($get_grades = mysqli_fetch_assoc($execute_grade)) {
                                     $grade[$i] = $get_grades['grade'];
                                     $points[$i] = $get_grades['points'];
-                                    $subject_points[$i] = $get_grades['points'];
+                                    $subject_points[$i]= $points[$i];
                                     $remarks[$i] = $get_grades['remarks'];
                                 }
 
                                 //getting grade for cycle 1
-                                $sql = "SELECT * FROM $grading_system WHERE upper_limit>=$cycle_one[$i] AND lower_limit<=$cycle_one[$i]";
+                                $sql = "SELECT * FROM $grading_system WHERE upper_limit>=$cycle_two[$i] AND lower_limit<=$cycle_two[$i]";
                                 $execute = mysqli_query($obj->con, $sql);
 
                                 while ($get_grades = mysqli_fetch_assoc($execute)) {
-                                    $cycle_one_grade[$i] = $get_grades['grade'];
+                                    $cycle_two_grade[$i] = $get_grades['grade'];
+                                    $cycle_two_points[$i] = $get_grades['points'];
                                 }
 
                                 $data = array(
@@ -1141,8 +501,9 @@ if($_SESSION['account'])
                                     "class" => $class,
                                     "form" => $form,
                                     "subject" => $subject,
-                                    "mid" => $cycle_one[$i],
-                                    "mid_grade"=>$cycle_one_grade[$i],
+                                    "mid" => $cycle_two[$i],
+                                    "mid_grade"=>$cycle_two_grade[$i],
+                                    "mid_points"=>$cycle_two_points[$i],
                                     "total" => $mark[$i],
                                     "grade" =>$grade[$i],
                                     "points"=>$points[$i],
@@ -1167,673 +528,132 @@ if($_SESSION['account'])
 
                                         foreach($fetch_total as $row)
                                         {
-                                            $total_mark[$i]=$row['total']+$mark[$i];
-                                            $total_new[$i]=$total_mark[$i];
-                                            $subject_total[$i]=$row[$subject]+$mark[$i];
                                             $count[$i]=$row['count']+1;
-                                            $tpoints[$i] = $row['total_points'] + $points[$i];
-
+                                            $subject_total[$i]=$row[$subject]+$mark[$i];
                                         }
 
                                         //updating in cycle 1 results table
 
                                         //getting from cycle 1 results table so as to update
                                         $where=array("admission"=>$admission[$i],"period"=>$period);
-                                        $get_cycle_one=$obj->fetch_records("cycle_two",$where);
-
-
-                                        //if results exist in cycle one table
-                                        if($get_cycle_one) {
-                                            foreach ($get_cycle_one as $row) {
-                                                $total_mark_one[$i] = $row['total'] + $cycle_one[$i];
+                                        $get_cycle_two=$obj->fetch_records("cycle_two",$where);
+                                        if($get_cycle_two)
+                                        {
+                                            foreach($get_cycle_two as $row)
+                                            {
                                                 $count_one[$i] = $row['count']+1;
-
                                             }
                                         }
-                                        else
+
+
+                                        //grading algorithm
+                                        $sql = "SELECT sum(points),sum(total) FROM results WHERE admission='$admission[$i]'  AND period = '$period'";
+                                        $exe = mysqli_query($obj->con,$sql);
+                                        $get_points = mysqli_fetch_array($exe);
+                                        $points[$i] = $get_points['sum(points)'];
+                                        $total_mark[$i] = $get_points['sum(total)'];
+
+                                        if(($form>=3 || ($form==2 && $term==3)))
                                         {
-                                            $total_mark_one[$i] = $cycle_one[$i];
-                                        }
+                                            //biology
+                                            $sql = "SELECT points,total FROM results WHERE subject='Biology' AND admission='$admission[$i]' AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_bio = mysqli_fetch_array($exe);
+                                            $biology[$i] = $get_bio['points'];
+                                            $bio[$i] = $get_bio['total'];
 
-//                                          if($class[0]>=3)
-//                                          {
-//                                              $average[$i]=$total_mark[$i]/$count[$i];
-//                                          }
-//                                          else
-//                                          {
-//                                              $average[$i]=$total_mark[$i]/$min;
-//                                          }
+                                            //physics
+                                            $sql = "SELECT points,total FROM results WHERE subject='Physics' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_phy = mysqli_fetch_array($exe);
+                                            $physics[$i] = $get_phy['points'];
+                                            $phy[$i] = $get_phy['total'];
 
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Chemistry')
-                                        {
-                                            //check if physics or biology exist
+                                            //chemistry
+                                            $sql = "SELECT points,total FROM results WHERE subject='Chemistry' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_chem = mysqli_fetch_array($exe);
+                                            $chemistry[$i] = $get_chem['points'];
+                                            $chem[$i] = $get_chem['total'];
 
-                                            $where = array('subject'=>'Biology','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bio[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Physics','admission'=>$admission[$i],'period'=>$period);
-                                            $get_phy[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Agriculture','admission'=>$admission[$i],'period'=>$period);
-                                            $get_agric[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Business','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bus[$i] = $obj->fetch_records('results',$where);
 
-                                            //if both exist
-                                            if($get_bio[$i] && $get_phy[$i])
+                                            //agriculture
+                                            $sql = "SELECT points,total FROM results WHERE subject='Agriculture' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_agri = mysqli_fetch_array($exe);
+                                            $agriculture[$i] = $get_agri['points'];
+                                            $agri[$i] = $get_agri['total'];
+
+                                            //business
+                                            $sql = "SELECT points,total FROM results WHERE subject='Business' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_bus = mysqli_fetch_array($exe);
+                                            $business[$i] = $get_bus['points'];
+                                            $bus[$i] = $get_bus['total'];
+
+                                            //geography
+                                            $sql = "SELECT points,total FROM results WHERE subject='Geography' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_geo = mysqli_fetch_array($exe);
+                                            $geography[$i] = $get_geo['points'];
+                                            $geo[$i] = $get_geo['total'];
+
+                                            //history
+                                            $sql = "SELECT points,total FROM results WHERE subject='History' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_hist = mysqli_fetch_array($exe);
+                                            $history[$i] = $get_hist['points'];
+                                            $his[$i] = $get_hist['total'];
+
+                                            //cre
+                                            $sql = "SELECT points,total FROM results WHERE subject='CRE' AND admission='$admission[$i]'  AND period='$period'";
+                                            $exe = mysqli_query($obj->con, $sql);
+                                            $get_cre = mysqli_fetch_array($exe);
+                                            $cre[$i] = $get_cre['points'];
+                                            $cr[$i] = $get_cre['total'];
+
+                                            if($get_chem && $get_bio && $get_phy && ($get_bus || $get_agri))
                                             {
-                                                foreach($get_phy[$i] as $row)
+                                                if($get_bus)
                                                 {
-                                                    $physics[$i] = $row['total'];
-                                                    $physics_points[$i] = $row['points'];
-                                                    $physics_one[$i] = $row['mid'];
+                                                    $technical[$i] = $business[$i];
+                                                    $technical_mark[$i] = $bus[$i];
                                                 }
-                                                foreach($get_bio[$i] as $row)
+                                                if($get_agri)
                                                 {
-                                                    $biology[$i] = $row['total'];
-                                                    $biology_points[$i] = $row['points'];
-                                                    $biology_one[$i] = $row['mid'];
+                                                    $technical[$i] = $agriculture[$i];
+                                                    $technical_mark[$i] = $agri[$i];
                                                 }
 
-                                                //pick the 2 highest
-                                                $sciences[$i] = array($biology[$i],$physics[$i],$mark[$i]);
-                                                $sciences_one[$i] = array($biology_one[$i],$physics_one[$i],$cycle_one[$i]);
-                                                $sci_points[$i] = array($physics_points[$i],$biology_points[$i],$points[$i]);
-
-
-                                                if($get_agric[$i] || $get_bus[$i])
-                                                {
-                                                    //deduct the lowest
-                                                    $total_mark[$i] = $total_mark[$i] - min($sciences[$i]);
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - min($sciences_one[$i]);
-
-
-                                                    if($get_agric[$i])
-                                                    {
-                                                        foreach($get_agric[$i] as $row)
-                                                        {
-                                                            $humanity[$i] = $row['total'];
-                                                            $humanity_point[$i] = $row['points'];
-                                                            $humanity_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-                                                    if($get_bus[$i])
-                                                    {
-                                                        foreach($get_bus[$i] as $row)
-                                                        {
-                                                            $humanity[$i] = $row['total'];
-                                                            $humanity_point[$i] = $row['points'];
-                                                            $humanity_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-
-                                                    if( min($sciences[$i]) > $humanity[$i])
-                                                    {
-                                                        $total_mark[$i] = $total_mark[$i] - $humanity[$i] +  min($sciences[$i]);
-                                                        $tpoints[$i] = $tpoints[$i] - $humanity_point[$i];
-                                                        $total_mark_one[$i] = $total_mark_one[$i] - $humanity_one[$i] +  min($sciences_one[$i]);
-                                                    }
-                                                    else
-                                                    {
-                                                        $tpoints[$i] = $tpoints[$i] - min($sci_points[$i]);
-                                                    }
-                                                    if( min($sciences_one[$i]) > $humanity_one[$i])
-                                                    {
-                                                        $total_mark_one[$i] = $total_mark_one[$i] - $humanity_one[$i] +  min($sciences_one[$i]);
-                                                    }
-
-
-
-                                                }
-                                            }
-                                        }
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Biology')
-                                        {
-                                            //check if physics and chemistry exist
-
-                                            $where = array('subject'=>'Chemistry','admission'=>$admission[$i],'period'=>$period);
-                                            $get_chem[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Physics','admission'=>$admission[$i],'period'=>$period);
-                                            $get_phy[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Agriculture','admission'=>$admission[$i],'period'=>$period);
-                                            $get_agric[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Business','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bus[$i] = $obj->fetch_records('results',$where);
-
-                                            //if both exist
-                                            if($get_chem[$i] && $get_phy[$i])
-                                            {
-                                                foreach($get_phy[$i] as $row)
-                                                {
-                                                    $physics[$i] = $row['total'];
-                                                    $physics_points[$i] = $row['points'];
-                                                    $physics_one[$i] = $row['mid'];
-                                                }
-                                                foreach($get_chem[$i] as $row)
-                                                {
-                                                    $chemistry[$i] = $row['total'];
-                                                    $chemistry_points[$i] = $row['points'];
-                                                    $chemistry_one[$i] = $row['mid'];
-                                                }
-
-                                                //pick the 2 highest
-                                                $sciences[$i] = array($chemistry[$i],$physics[$i],$mark[$i]);
-                                                $sciences_one[$i] = array($chemistry_one[$i],$physics_one[$i],$cycle_one[$i]);
-                                                $sci_points[$i] = array($chemistry_points[$i],$physics_points[$i],$points[$i]);
-
-
-                                                if($get_agric[$i] || $get_bus[$i])
-                                                {
-                                                    //deduct the lowest
-                                                    $total_mark[$i] = $total_mark[$i] - min($sciences[$i]);
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - min($sciences_one[$i]);
-
-                                                    if($get_agric[$i])
-                                                    {
-                                                        foreach($get_agric[$i] as $row)
-                                                        {
-                                                            $humanity[$i] = $row['total'];
-                                                            $humanity_point[$i] = $row['points'];
-                                                            $humanity_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-                                                    if($get_bus[$i])
-                                                    {
-                                                        foreach($get_bus[$i] as $row)
-                                                        {
-                                                            $humanity[$i] = $row['total'];
-                                                            $humanity_point[$i] = $row['points'];
-                                                            $humanity_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-
-                                                    if( min($sciences[$i]) > $humanity[$i])
-                                                    {
-                                                        $total_mark[$i] = $total_mark[$i] - $humanity[$i] +  min($sciences[$i]);
-                                                        $tpoints[$i] = $tpoints[$i] - $humanity_point[$i];
-                                                    }
-                                                    else
-                                                    {
-                                                        $tpoints[$i] = $tpoints[$i] - min($sci_points[$i]);
-                                                    }
-                                                    if( min($sciences_one[$i]) > $humanity_one[$i])
-                                                    {
-                                                        $total_mark_one[$i] = $total_mark_one[$i] - $humanity_one[$i] +  min($sciences_one[$i]);
-                                                    }
-
-
-
-                                                }
-                                            }
-                                        }
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Physics')
-                                        {
-                                            //check if biology and chemistry exist
-
-                                            $where = array('subject'=>'Biology','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bio[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Chemistry','admission'=>$admission[$i],'period'=>$period);
-                                            $get_chem[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Agriculture','admission'=>$admission[$i],'period'=>$period);
-                                            $get_agric[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Business','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bus[$i] = $obj->fetch_records('results',$where);
-
-                                            //if both exist
-                                            if($get_bio[$i] && $get_chem[$i])
-                                            {
-                                                foreach($get_bio[$i] as $row)
-                                                {
-                                                    $biology[$i] = $row['total'];
-                                                    $biology_points[$i] = $row['points'];
-                                                    $biology_one[$i] = $row['mid'];
-                                                }
-                                                foreach($get_chem[$i] as $row)
-                                                {
-                                                    $chemistry[$i] = $row['total'];
-                                                    $chemistry_points[$i] = $row['points'];
-                                                    $chemistry_one[$i] = $row['mid'];
-                                                }
-
-                                                if($get_agric[$i] || $get_bus[$i])
-                                                {
-
-
-
-                                                 //pick the 2 highest
-                                                $sciences[$i] = array($chemistry[$i],$biology[$i],$mark[$i]);
-                                                $sciences_one[$i] = array($chemistry_one[$i],$biology_one[$i],$cycle_one[$i]);
-                                                $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$points[$i]);
-
-
-                                                    //deduct the lowest
-                                                    $total_mark[$i] = $total_mark[$i] - min($sciences[$i]);
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - min($sciences_one[$i]);
-
-                                                    if($get_agric[$i])
-                                                    {
-                                                        foreach($get_agric[$i] as $row)
-                                                        {
-                                                            $humanity[$i] = $row['total'];
-                                                            $humanity_point[$i] = $row['points'];
-                                                            $humanity_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-                                                    if($get_bus[$i])
-                                                    {
-                                                        foreach($get_bus[$i] as $row)
-                                                        {
-                                                            $humanity[$i] = $row['total'];
-                                                            $humanity_point[$i] = $row['points'];
-                                                            $humanity_one[$i] = $row['mid'];
-                                                        }
-                                                    }
-
-                                                    if( min($sciences[$i]) > $humanity[$i])
-                                                    {
-                                                        $total_mark[$i] = $total_mark[$i] - $humanity[$i] +  min($sciences[$i]);
-                                                        $tpoints[$i] = $tpoints[$i] - $humanity_point[$i];
-
-                                                    }
-                                                    else
-                                                    {
-                                                        $tpoints[$i] = $tpoints[$i] - min($sci_points[$i]);
-                                                    }
-                                                    if( min($sciences_one[$i]) > $humanity_one[$i])
-                                                    {
-                                                        $total_mark_one[$i] = $total_mark_one[$i] - $humanity_one[$i] +  min($sciences_one[$i]);
-                                                    }
-
-
-
-                                                }
-                                            }
-                                        }
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Agriculture')
-                                        {
-                                            //check if 3 sciences exist
-
-
-                                            $where = array('subject'=>'Chemistry','admission'=>$admission[$i],'period'=>$period);
-                                            $get_chem[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Physics','admission'=>$admission[$i],'period'=>$period);
-                                            $get_phy[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Biology','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bio[$i] = $obj->fetch_records('results',$where);
-
-                                            //if both exist
-                                            if($get_chem[$i] && $get_phy[$i] && $get_bio[$i])
-                                            {
-                                                foreach($get_phy[$i] as $row)
-                                                {
-                                                    $physics[$i] = $row['total'];
-                                                    $physics_one[$i] = $row['mid'];
-                                                    $physics_points[$i] = $row['points'];
-                                                }
-                                                foreach($get_chem[$i] as $row)
-                                                {
-                                                    $chemistry[$i] = $row['total'];
-                                                    $chemistry_one[$i] = $row['mid'];
-                                                    $chemistry_points[$i] = $row['points'];
-                                                }
-                                                foreach($get_bio[$i] as $row)
-                                                {
-                                                    $biology[$i] = $row['total'];
-                                                    $biology_one[$i] = $row['mid'];
-                                                    $biology_points[$i] = $row['points'];
-                                                }
-
-                                                //check lowest science
-                                                $sciences[$i] = array($chemistry[$i],$physics[$i],$biology[$i]);
-                                                $sciences_one[$i] = array($chemistry_one[$i],$physics_one[$i],$biology_one[$i]);
-
-                                                $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$physics_points[$i]);
-
-
-                                                $lowest[$i] = min($sciences[$i]);
-                                                $lowest_one[$i] = min($sciences_one[$i]);
-
-                                                //compare lowest to agriculture
-                                                if($lowest[$i] > $mark[$i])
-                                                {
-                                                    //deduct the lowest
-                                                    $total_mark[$i] = $total_mark[$i] - $mark[$i];
-                                                    $tpoints[$i] = $tpoints[$i] - $points[$i];
-
-                                                }
-                                                else if($lowest[$i] <= $mark[$i])
-                                                {
-                                                    $total_mark[$i] = $total_mark[$i] - $lowest[$i];
-                                                    $tpoints[$i] = $tpoints[$i] - min($sci_points[$i]);
-                                                }
-
-                                                //compare lowest to agriculture in cycle one
-                                                if($lowest_one[$i] > $cycle_one[$i])
-                                                {
-                                                    //deduct the lowest
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - $cycle_one[$i];
-                                                    $total_mark_one[$i] = $total_mark_one[$i] + $lowest_one[$i];
-
-                                                }
-                                                else if($lowest_one[$i] <= $cycle_one[$i])
-                                                {
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - $lowest_one[$i];
-                                                }
-
+                                                $lowest_science[$i] = min($chemistry[$i],$physics[$i],$biology[$i],$technical[$i]);
+                                                $lowest_science_mark[$i] = min($chem[$i],$phy[$i],$bio[$i],$technical_mark[$i]);
+                                                $points[$i] = $points[$i] - $lowest_science[$i];
+                                                $total_mark[$i] = $total_mark[$i] - $lowest_science_mark[$i];
 
                                             }
-
-                                        }
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Business')
-                                        {
-                                            //check if 3 sciences exist
-
-                                            $where = array('subject'=>'Chemistry','admission'=>$admission[$i],'period'=>$period);
-                                            $get_chem[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Physics','admission'=>$admission[$i],'period'=>$period);
-                                            $get_phy[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Biology','admission'=>$admission[$i],'period'=>$period);
-                                            $get_bio[$i] = $obj->fetch_records('results',$where);
-
-                                            //if both exist
-                                            if($get_chem[$i] && $get_phy[$i] && $get_bio[$i])
+                                            if($get_cre || $get_geo || $get_hist)
                                             {
-                                                foreach($get_phy[$i] as $row)
-                                                {
-                                                    $physics[$i] = $row['total'];
-                                                    $physics_points[$i] = $row['points'];
-                                                    $physics_one[$i] = $row['mid'];
-                                                }
-                                                foreach($get_chem[$i] as $row)
-                                                {
-                                                    $chemistry[$i] = $row['total'];
-                                                    $chemistry_points[$i] = $row['points'];
-                                                    $chemistry_one[$i] = $row['mid'];
-                                                }
-                                                foreach($get_bio[$i] as $row)
-                                                {
-                                                    $biology[$i] = $row['total'];
-                                                    $biology_points[$i] = $row['points'];
-                                                    $biology_one[$i] = $row['mid'];
-                                                }
-
-                                                //check lowest science
-                                                $sciences[$i] = array($chemistry[$i],$physics[$i],$biology[$i]);
-                                                $sciences_one[$i] = array($chemistry_one[$i],$physics_one[$i],$biology_one[$i]);
-                                                $sci_points[$i] = array($chemistry_points[$i],$biology_points[$i],$physics_points[$i]);
-                                                ;
-
-                                                $lowest[$i] = min($sciences[$i]);
-                                                $lowest_one[$i] = min($sciences_one[$i]);
-
-                                                //compare lowest to agriculture
-                                                if($lowest[$i] > $mark[$i])
-                                                {
-                                                    //deduct the lowest
-                                                    $total_mark[$i] = $total_mark[$i] - $mark[$i];
-                                                    $tpoints[$i] = $tpoints[$i] - $points[$i];
-
-                                                }
-                                                else if($lowest[$i] <= $mark[$i])
-                                                {
-                                                    $total_mark[$i] = $total_mark[$i] - $lowest[$i];
-                                                    $tpoints[$i] = $tpoints[$i] - min($sci_points[$i]);
-                                                }
-
-                                                //compare lowest to business in cycle one
-                                                if($lowest_one[$i] > $cycle_one[$i])
-                                                {
-                                                    //deduct the lowest
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - $cycle_one[$i];
-                                                    $total_mark_one[$i] = $total_mark_one[$i] + $lowest_one[$i];
-
-                                                }
-                                                else if($lowest_one[$i] <= $cycle_one[$i])
-                                                {
-                                                    $total_mark_one[$i] = $total_mark_one[$i] - $lowest_one[$i];
-                                                }
-
-                                            }
-
-                                        }
-
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'History')
-                                        {
-                                            //check if cre and geog exist
-                                            $where = array('subject'=>'CRE','admission'=>$admission[$i],'period'=>$period);
-                                            $get_cre[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'Geography','admission'=>$admission[$i],'period'=>$period);
-                                            $get_geo[$i] = $obj->fetch_records('results',$where);
-
-                                            //if cre exists but not geography
-                                            if($get_cre[$i] && !$get_geo[$i])
-                                            {
-                                                foreach($get_cre[$i] as $row)
-                                                {
-                                                    $cre[$i] = $row['total'];
-                                                    $cre_points[$i] = $row['points'];
-                                                    $cre_one[$i] = $row['mid'];
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($cre[$i],$mark[$i]);
-                                                $humanities_one[$i] = array($cre_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
-
-                                                $tpoints[$i] = $tpoints[$i] - min($cre_points[$i],$points[$i]);
-
-
-                                            }
-
-                                            //if geography exists but not cre
-                                            if($get_geo[$i] && !$get_cre[$i] )
-                                            {
-                                                foreach($get_geo[$i] as $row)
-                                                {
-                                                    $geo[$i] = $row['total'];
-                                                    $geo_points[$i] = $row['points'];
-                                                    $geo_one[$i] = $row['mid'];
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($geo[$i],$mark[$i]);
-                                                $humanities_one[$i] = array($geo_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
-
-                                                $tpoints[$i] = $tpoints[$i] - min($cre_points[$i],$points[$i]);
-
-                                            }
-                                            if($get_cre[$i] && $get_geo[$i])
-                                            {
-                                                foreach($get_geo[$i] as $row)
-                                                {
-                                                    $geo[$i] = $row['total'];
-                                                    $geo_one[$i] = $row['mid'];
-                                                }
-                                                foreach($get_cre[$i] as $row)
-                                                {
-                                                    $cre[$i] = $row['total'];
-                                                    $cre_one[$i] = $row['mid'];
-                                                }
-
-                                                //pick only the highest humanity and add to the total
-                                                $geocre[$i] = array($cre[$i],$geo[$i]);
-                                                $geocre_one[$i] = array($cre_one[$i],$geo_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($geocre[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($geocre_one[$i]) - $cycle_one[$i];
-                                                $humanities[$i] = array($mark[$i],$geo[$i],$cre[$i]);
-                                                $humanities_one[$i] = array($cycle_one[$i],$geo_one[$i],$cre_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($humanities[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($humanities_one[$i]);
-
-                                                $hum_points[$i] = array($geo_points[$i],$cre_points[$i],$points[$i]);
-                                                rsort($hum_points[$i]);
-                                                $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
-                                            }
-
-                                        }
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'Geography')
-                                        {
-                                            //check if cre and hist exist
-                                            $where = array('subject'=>'CRE','admission'=>$admission[$i],'period'=>$period);
-                                            $get_cre[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'History','admission'=>$admission[$i],'period'=>$period);
-                                            $get_hist[$i] = $obj->fetch_records('results',$where);
-
-                                            //if cre exists but not geography
-                                            if($get_cre[$i] && !$get_hist[$i])
-                                            {
-                                                foreach($get_cre[$i] as $row)
-                                                {
-                                                    $cre[$i] = $row['total'];
-                                                    $cre_one[$i] = $row['mid'];
-                                                    $cre_points[$i] = $row['points'];
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($cre[$i],$mark[$i]);
-                                                $humanities_one[$i] = array($cre_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
-
-                                                $tpoints[$i] = $tpoints[$i] - min($cre_points[$i],$points[$i]);
-                                            }
-
-                                            //if geography exists but not cre
-                                            if($get_hist[$i] && !$get_cre[$i] )
-                                            {
-                                                foreach($get_hist[$i] as $row)
-                                                {
-                                                    $his[$i] = $row['total'];
-                                                    $his_one[$i] = $row['mid'];
-                                                    $his_points[$i] = $row['points'];
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($his[$i],$mark[$i]);
-                                                $humanities_one[$i] = array($his_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
-
-                                                $tpoints[$i] = $tpoints[$i] - min($his_points[$i],$points[$i]);
-
-                                            }
-                                            if($get_cre[$i] && $get_hist[$i])
-                                            {
-                                                foreach($get_hist[$i] as $row)
-                                                {
-                                                    $his[$i] = $row['total'];
-                                                    $his_one[$i] = $row['mid'];
-                                                }
-                                                foreach($get_cre[$i] as $row)
-                                                {
-                                                    $cre[$i] = $row['total'];
-                                                    $cre_one[$i] = $row['mid'];
-                                                }
-
-                                                //pick only the highest humanity and add to the total
-                                                $hiscre[$i] = array($cre[$i],$his[$i]);
-                                                $hiscre_one[$i] = array($cre_one[$i],$his_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($hiscre[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($hiscre_one[$i]) - $cycle_one[$i];
-                                                $humanities[$i] = array($mark[$i],$his[$i],$cre[$i]);
-                                                $humanities_one[$i] = array($cycle_one[$i],$his_one[$i],$cre_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($humanities[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($humanities_one[$i]);
-
-                                                $hum_points[$i] = array($his_points[$i],$cre_points[$i],$points[$i]);
-                                                rsort($hum_points[$i]);
-                                                $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
-                                            }
-                                        }
-                                        if(($form>=3 || ($form==2 && $term==3)) && $subject == 'CRE')
-                                        {
-                                            //check if geo and hist exist
-                                            $where = array('subject'=>'Geography','admission'=>$admission[$i],'period'=>$period);
-                                            $get_geo[$i] = $obj->fetch_records('results',$where);
-                                            $where = array('subject'=>'History','admission'=>$admission[$i],'period'=>$period);
-                                            $get_hist[$i] = $obj->fetch_records('results',$where);
-
-                                            //if geo exists but not his
-                                            if($get_geo[$i] && !$get_hist[$i])
-                                            {
-                                                foreach($get_geo[$i] as $row)
-                                                {
-                                                    $geo[$i] = $row['total'];
-                                                    $geo_one[$i] = $row['mid'];
-                                                    $geo_points[$i] = $row['points'];
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($geo[$i],$mark[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
-                                                $humanities_one[$i] = array($geo_one[$i],$cycle_one[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
-
-                                                $tpoints[$i] = $tpoints[$i] - min($geo_points[$i],$points[$i]);
-                                            }
-
-                                            //if geography exists but not cre
-                                            if($get_hist[$i] && !$get_geo[$i] )
-                                            {
-                                                foreach($get_hist[$i] as $row)
-                                                {
-                                                    $his[$i] = $row['total'];
-                                                    $his_one[$i] = $row['mid'];
-                                                    $his_points[$i] = $row['points'];
-
-                                                }
-                                                //swapping
-                                                $humanities[$i] = array($his[$i],$mark[$i]);
-                                                $humanities_one[$i] = array($his_one[$i],$cycle_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - min($humanities[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] - min($humanities_one[$i]);
-
-                                                $tpoints[$i] = $tpoints[$i] - min($points[$i],$his_points[$i]);
-
-                                            }
-
-                                            if($get_geo[$i] && $get_hist[$i])
-                                            {
-                                                foreach($get_hist[$i] as $row)
-                                                {
-                                                    $his[$i] = $row['total'];
-                                                    $his_one[$i] = $row['mid'];
-                                                }
-                                                foreach($get_geo[$i] as $row)
-                                                {
-                                                    $geo[$i] = $row['total'];
-                                                    $geo_one[$i] = $row['mid'];
-                                                }
-
-                                                //pick only the highest humanity and add to the total
-                                                $hisgeo[$i] = array($geo[$i],$his[$i]);
-                                                $hisgeo_one[$i] = array($geo_one[$i],$his_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] - max($hisgeo[$i]) - $mark[$i];
-                                                $total_mark_one[$i] = $total_mark_one[$i] - max($hisgeo_one[$i]) - $cycle_one[$i];
-                                                $humanities[$i] = array($mark[$i],$his[$i],$geo[$i]);
-                                                $humanities_one[$i] = array($cycle_one[$i],$his_one[$i],$geo_one[$i]);
-                                                $total_mark[$i] = $total_mark[$i] + max($humanities[$i]);
-                                                $total_mark_one[$i] = $total_mark_one[$i] + max($humanities_one[$i]);
-
-                                                $hum_points[$i] = array($his_points[$i],$geo_points[$i],$points[$i]);
-                                                rsort($hum_points[$i]);
-                                                $tpoints[$i] = $tpoints[$i] - $hum_points[$i][0] - $hum_points[$i][1];
+                                                $points[$i] = $points[$i] - $history[$i] - $cre[$i] - $geography[$i];
+                                                $total_mark[$i]  = $total_mark[$i]  - $his[$i] - $cr[$i] - $geo[$i];
+                                                $points[$i] = $points[$i] + max($history[$i],$cre[$i],$geography[$i]);
+                                                $total_mark[$i] = $total_mark[$i] + max($his[$i],$cr[$i],$geo[$i]);
 
                                             }
                                         }
-
-
 
                                         //calculate the grade
                                         $average[$i]=$total_mark[$i]/$min;
-                                        $average_one[$i]=$total_mark_one[$i]/$min;
-                                        $average_points[$i] = $tpoints[$i] / $min;
+                                        $average_points[$i] = $points[$i] / $min;
 
 
-                                        $sql_grade = "SELECT * FROM $grading_system WHERE upper_limit>=$tpoints[$i] AND lower_limit<=$tpoints[$i]";
+                                        $sql_grade = "SELECT * FROM $grading_system WHERE upper_limit>=$points[$i] AND lower_limit<=$points[$i]";
                                         $execute_grade = mysqli_query($obj->con, $sql_grade);
 
                                         if ($execute_grade) {
 
                                             while ($get_grades = mysqli_fetch_assoc($execute_grade)) {
                                                 $grade[$i] = $get_grades['grade'];
-                                                $points[$i] = $get_grades['points'];
+                                                $avpoints[$i] = $get_grades['points'];
                                                 $remarks[$i] = $get_grades['remarks'];
                                             }
                                         }
@@ -1849,8 +669,8 @@ if($_SESSION['account'])
                                             "average" => $average[$i],
                                             "grade" => $grade[$i],
                                             "count" => $count[$i],
-                                            "points" => $points[$i],
-                                            "total_points"=> $tpoints[$i],
+                                            "points" => $avpoints[$i],
+                                            "total_points"=> $points[$i],
                                             "average_points"=>$average_points[$i],
                                             "remarks" => $remarks[$i]
 
@@ -1859,18 +679,116 @@ if($_SESSION['account'])
 
                                         if ($obj->update_record("final_result", $where, $data)) {
 
-                                            if($get_cycle_one)
+                                            if($get_cycle_two)
                                             {
-                                                //get new grade
-                                                $sql = "SELECT * FROM $grading_system WHERE upper_limit>=round($average_one[$i]) AND lower_limit<=round($average_one[$i])";
+
+                                                //grading algorithm
+                                                $sql = "SELECT sum(mid_points),sum(mid) FROM results WHERE admission='$admission[$i]'  AND period = '$period'";
+                                                $exe = mysqli_query($obj->con,$sql);
+                                                $get_points = mysqli_fetch_array($exe);
+                                                $points[$i] = $get_points['sum(mid_points)'];
+                                                $total_mark[$i] = $get_points['sum(mid)'];
+
+                                                if(($form>=3 || ($form==2 && $term==3)))
+                                                {
+                                                    //biology
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Biology' AND admission='$admission[$i]' AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_bio = mysqli_fetch_array($exe);
+                                                    $biology[$i] = $get_bio['mid_points'];
+                                                    $bio[$i] = $get_bio['mid'];
+                                                    //physics
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Physics' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_phy = mysqli_fetch_array($exe);
+                                                    $physics[$i] = $get_phy['mid_points'];
+                                                    $phy[$i] = $get_phy['mid'];
+
+                                                    //chemistry
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Chemistry' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_chem = mysqli_fetch_array($exe);
+                                                    $chemistry[$i] = $get_chem['mid_points'];
+                                                    $chem[$i] = $get_chem['mid'];
+
+
+                                                    //agriculture
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Agriculture' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_agri = mysqli_fetch_array($exe);
+                                                    $agriculture[$i] = $get_agri['mid_points'];
+                                                    $agri[$i] = $get_agri['mid'];
+
+                                                    //business
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Business' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_bus = mysqli_fetch_array($exe);
+                                                    $business[$i] = $get_bus['mid_points'];
+                                                    $bus[$i] = $get_bus['mid'];
+
+                                                    //geography
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='Geography' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_geo = mysqli_fetch_array($exe);
+                                                    $geography[$i] = $get_geo['mid_points'];
+                                                    $geo[$i] = $get_geo['mid'];
+
+                                                    //history
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='History' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_hist = mysqli_fetch_array($exe);
+                                                    $history[$i] = $get_hist['mid_points'];
+                                                    $his[$i] = $get_hist['mid'];
+
+                                                    //cre
+                                                    $sql = "SELECT mid_points,mid FROM results WHERE subject='CRE' AND admission='$admission[$i]'  AND period='$period'";
+                                                    $exe = mysqli_query($obj->con, $sql);
+                                                    $get_cre = mysqli_fetch_array($exe);
+                                                    $cre[$i] = $get_cre['mid_points'];
+                                                    $cr[$i] = $get_cre['mid'];
+
+                                                    if($get_chem && $get_bio && $get_phy && ($get_bus || $get_agri))
+                                                    {
+                                                        if($get_bus)
+                                                        {
+                                                            $technical[$i] = $business[$i];
+                                                            $technical_mark[$i] = $bus[$i];
+                                                        }
+                                                        if($get_agri)
+                                                        {
+                                                            $technical[$i] = $agriculture[$i];
+                                                            $technical_mark[$i] = $agri[$i];
+                                                        }
+
+                                                        $lowest_science[$i] = min($chemistry[$i],$physics[$i],$biology[$i],$technical[$i]);
+                                                        $lowest_science_mark[$i] = min($chem[$i],$phy[$i],$bio[$i],$technical_mark[$i]);
+                                                        $points[$i] = $points[$i] - $lowest_science[$i];
+                                                        $total_mark[$i] = $total_mark[$i]  - $lowest_science_mark[$i];
+
+                                                    }
+                                                    if($get_cre || $get_geo || $get_hist)
+                                                    {
+                                                        $points[$i] = $points[$i] - $history[$i] - $cre[$i] - $geography[$i];
+                                                        $total_mark[$i]  = $total_mark[$i]  - $his[$i] - $cr[$i] - $geo[$i];
+                                                        $points[$i] = $points[$i] + max($history[$i],$cre[$i],$geography[$i]);
+                                                        $total_mark[$i] = $total_mark[$i] + max($his[$i],$cr[$i],$geo[$i]);
+
+                                                    }
+                                                }
+
+                                                //calculate the grade
+                                                $average[$i]=$total_mark[$i]/$min;
+                                                $average_points[$i] = $points[$i] / $min;
+
+                                                $sql = "SELECT * FROM $grading_system WHERE upper_limit>=$points[$i] AND lower_limit<=$points[$i]";
                                                 $execute = mysqli_query($obj->con, $sql);
 
                                                 if ($execute) {
 
                                                     while ($get_grades = mysqli_fetch_assoc($execute)) {
-                                                        $grade_one[$i] = $get_grades['grade'];
-                                                        $points_one[$i] = $get_grades['points'];
-                                                        $remarks_one[$i] = $get_grades['remarks'];
+                                                        $grade[$i] = $get_grades['grade'];
+                                                        $avpoints[$i] = $get_grades['points'];
+                                                        $remarks[$i] = $get_grades['remarks'];
                                                     }
                                                 }
                                                 //data update in final results table
@@ -1878,14 +796,15 @@ if($_SESSION['account'])
                                                 //updating data to results table
                                                 $data = array(
 
-                                                    $subject => $cycle_one[$i],
-                                                    "total" => $total_mark_one[$i],
-                                                    "cumulative"=>$total_mark[$i],
-                                                    "average" => $average_one[$i],
-                                                    "grade" => $grade_one[$i],
-                                                    "points" => $points_one[$i],
+                                                    $subject => $cycle_two[$i],
+                                                    "total" => $total_mark[$i],
+                                                    "average" => $average[$i],
+                                                    "grade" => $grade[$i],
+                                                    "points" => $avpoints[$i],
+                                                    "total_points"=> $points[$i],
+                                                    "average_points"=>$average_points[$i],
                                                     "count" => $count_one[$i],
-                                                    "remarks" => $remarks_one[$i]
+                                                    "remarks" => $remarks[$i]
 
                                                 );
                                                 $where = array("admission" => $admission[$i], "period" => $period);
@@ -1898,7 +817,7 @@ if($_SESSION['account'])
                                             }
                                             else{
 
-                                                $average[$i]=$cycle_one[$i]/$min;
+                                                $average[$i]=$cycle_two[$i]/$min;
 
                                                 $sql_grade = "SELECT * FROM $grading_system WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
                                                 $execute_grade = mysqli_query($obj->con, $sql_grade);
@@ -1918,9 +837,9 @@ if($_SESSION['account'])
                                                     "class" => $class,
                                                     "form" =>$class[0],
                                                     "period" => $period,
-                                                    $subject => $cycle_one[$i],
-                                                    "total" => $cycle_one[$i],
-                                                    "cumulative"=>$cycle_one[$i],
+                                                    $subject => $cycle_two[$i],
+                                                    "total" => $cycle_two[$i],
+                                                    "cumulative"=>$cycle_two[$i],
                                                     "count" => 1,
                                                     "average" => $average[$i],
                                                     "grade" =>$grade[$i],
@@ -1990,7 +909,7 @@ if($_SESSION['account'])
 
                                         if($obj->insert_record("final_result",$data))
                                         {
-                                            $average[$i]=$cycle_one[$i]/$min;
+                                            $average[$i]=$cycle_two[$i]/$min;
 
                                             $sql_grade = "SELECT * FROM $grading_system WHERE upper_limit>=round($average[$i]) AND lower_limit<=round($average[$i])";
                                             $execute_grade = mysqli_query($obj->con, $sql_grade);
@@ -2010,9 +929,9 @@ if($_SESSION['account'])
                                                 "class" => $class,
                                                 "form" =>$class[0],
                                                 "period" => $period,
-                                                $subject => $cycle_one[$i],
-                                                "total" => $cycle_one[$i],
-                                                "cumulative"=>$cycle_one[$i],
+                                                $subject => $cycle_two[$i],
+                                                "total" => $cycle_two[$i],
+                                                "cumulative"=>$cycle_two[$i],
                                                 "count" => 1,
                                                 "average" => $average[$i],
                                                 "grade" =>$grade[$i],
