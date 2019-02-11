@@ -10,6 +10,7 @@
   {
       $name = $obj->con->real_escape_string(htmlspecialchars($_POST['name']));
       $initials = $obj->con->real_escape_string(htmlspecialchars($_POST['initials']));
+      $code = $obj->con->real_escape_string(htmlentities($_POST['code']));
 
       if(!$obj->validate_string($name))
       {
@@ -32,7 +33,7 @@
           else
           {
 
-              $data  = array( "SubjectName" => $name , "SubjectKey" => $initials);
+              $data  = array( "SubjectName" => $name , "SubjectKey" => $initials,"code"=>$code);
               $sql="ALTER TABLE `final_result` ADD `$name` VARCHAR(4) NOT NULL AFTER `period`";
               $execute=mysqli_query($obj->con,$sql);
 

@@ -39,7 +39,18 @@
                 <!-- -->
                 <!-- -->
                 <li>
-                    <a href="enterresults.php"><i class="fa fa-clipboard"></i>Enter exam results</a>
+                    <a href="enterresults.php"><i class="fa fa-clipboard"></i>Enter group exam results</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-clipboard"></i>Enter individual exam results<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                     <li>
+                         <a href="cycle1.php">Cycle 1</a>
+                     </li>
+                     <li>
+                         <a href="cycle2.php">Cycle 2</a>
+                     </li>                       
+                    </ul>
                 </li>
                 <li>
                     <a href="#"><i class="fa fa-book"></i>Grading system<span class="fa arrow"></span></a>

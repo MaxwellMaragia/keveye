@@ -15,6 +15,7 @@ $periodt = substr($period, -1);
 $periody = substr($period, 0,4);
 $form = substr($class, -2,1);
 
+<<<<<<< HEAD:staff/teacherportal/gradeAnalysis.php
 
 
 
@@ -32,6 +33,9 @@ $yt = substr($period, 0,9);
 $prevp = $yt.' '.$prevt;
 
 $pdf = new FPDF('L','mm','A4');
+=======
+$pdf = new FPDF('L','mm','A3');
+>>>>>>> 62e835474a9f2552a07b38fb9ec50df0c272af2a:staff/teacherportal/broadsheet.php
 $pdf->AddPage();
 
 //set font to arial,bold,14pt

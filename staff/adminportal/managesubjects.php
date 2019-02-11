@@ -19,7 +19,7 @@ else{
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add subject</title>
+    <title>Add subjects</title>
     <!-- Bootstrap Styles-->
     <?php include "plugins/resources.php" ?>
 
@@ -45,7 +45,8 @@ else{
                         <div class="form-inline alert alert-info">
                             <form method="post" action="<?php htmlspecialchars($_SERVER['PHP_SELF'])?>">
                                 <input type="text" placeholder="subject name " class="form-control square-border" name="name" required />
-                                <input type="text" placeholder="initials eg chem " class="form-control square-border" name="initials" required />
+                                <input type="text" placeholder="initials eg ENG " class="form-control square-border" name="initials" required />
+                                <input type="text" placeholder="code eg 101 " class="form-control square-border" name="code" required />
                                 <button type="submit" class="btn btn-primary square-btn-adjust" name="save">Add subject</button>
                             </form>
                         </div>
@@ -69,6 +70,7 @@ else{
                          <tr>
                              <th>Subject name</th>
                              <th>Initials</th>
+                             <th>Code</th>
                              <th style="text-align: center">Delete</th>
                          </tr>
                          </thead>
@@ -86,6 +88,7 @@ else{
                                 <tr>
                                     <td><?php echo $row['SubjectName'] ?></td>
                                     <td><?php echo $row['SubjectKey'] ?></td>
+                                    <td><?php echo $row['code'] ?></td>
                                     <td align="center">
                                         <a href="#delete<?php echo $row['ID'];?>" data-toggle="modal"><button type="button" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> </button> </a>
                                     </td>

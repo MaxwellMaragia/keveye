@@ -70,28 +70,34 @@ else
                                 <thead>
                                 <tr>
                                     <th>
-                                        Student names
+                                        Names
                                     </th>
                                     <th>
-                                        Admission
+                                        Adm
                                     </th>
                                     <?php
 
                                     $get_subjects = $obj->fetch_all_records("subject");
                                     foreach($get_subjects as $row)
                                     {
-                                        echo "<th>".$row['SubjectName']."</th>";
+                                        echo "<th>".$row['SubjectKey']."</th>";
                                     }
 
                                     ?>
                                     <th>
-                                        Total
+                                        T.M
                                     </th>
                                     <th>
-                                        Average
+                                        A.M
                                     </th>
                                     <th>
-                                        Grade
+                                        T.P
+                                    </th>
+                                    <th>
+                                        A.P
+                                    </th>
+                                    <th>
+                                        M.G
                                     </th>
 
                                 </tr>
@@ -129,6 +135,12 @@ else
                                         </td>
                                         <td style='color:blue'>
                                             <?php echo $get_results['average']?>
+                                        </td>
+                                        <td style='color:blue'>
+                                            <?php echo $get_results['total_points']?>
+                                        </td>
+                                        <td style='color:blue'>
+                                            <?php echo $get_results['average_points']?>
                                         </td>
                                         <td style='color:blue'>
                                             <?php echo $get_results['grade']?>

@@ -60,7 +60,13 @@ else
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Form <?=$class?> final average results for <?=$period?>
+<<<<<<< HEAD
                     <a href="gradeAnalysis.php" target="_blank" style="float: right;"><span class="glyphicon glyphicon-download-alt"></span> BroadSheet</a>
+=======
+                    <a href="Broadsheet.php" target="_blank" style="float: right;"><span class="glyphicon glyphicon-download-alt"></span> BroadSheet</a>
+
+                    <a href="grade_distribution.php" target="_blank" style="float: right;"><span class="glyphicon glyphicon-download-alt"></span> Grade distribution &nbsp;</a>
+>>>>>>> 62e835474a9f2552a07b38fb9ec50df0c272af2a
                 </div>
                 <div class="panel-body">
 
@@ -71,34 +77,34 @@ else
                             <thead>
                             <tr>
                                 <th>
-                                    Student names
+                                    Names
                                 </th>
                                 <th>
-                                    Admission
+                                    Adm
                                 </th>
                                 <?php
 
                                 $get_subjects = $obj->fetch_all_records("subject");
                                 foreach($get_subjects as $row)
                                 {
-                                    echo "<th>".$row['SubjectName']."</th>";
+                                    echo "<th>".$row['SubjectKey']."</th>";
                                 }
 
                                 ?>
                                 <th>
-                                    Total marks
+                                    T.M
                                 </th>
                                 <th>
-                                    Average marks
+                                    A.M
                                 </th>
                                 <th>
-                                    Total points
+                                    T.P
                                 </th>
                                 <th>
-                                    Average points
+                                    A.P
                                 </th>
                                 <th>
-                                    Grade
+                                    M.G
                                 </th>
 
                             </tr>
