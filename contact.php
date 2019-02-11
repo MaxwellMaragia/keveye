@@ -3,10 +3,10 @@
 if (isset($_POST['send'])){
 
     if(isset($_POST['name']) && isset($_POST['contact']) &&  isset($_POST['subject']) && isset($_POST['message'])){
-        $name=$_POST['name'];
-        $contact=$_POST['contact'];
-        $subject=$_POST['subject'];
-        $message=$_POST['message'];
+        $name=$connect->real_escape_string(htmlentities($_POST['name']));
+        $contact=$connect->real_escape_string(htmlentities($_POST['contact']));
+        $subject=$connect->real_escape_string(htmlentities($_POST['subject']));
+        $message=$connect->real_escape_string(htmlentities($_POST['message']));
 
         $error=array();
 
@@ -18,12 +18,36 @@ if (isset($_POST['send'])){
 
         if(!empty($error[0])){
             $no_success= $error[0];
-        }else{
+        }else
+        {
+            //sent to email
+            $to = "kennedykimweli@gmail.com";
+            $subject = $subject;
+            $mailContent = 'Dear '.$name.',
+            <br/>'.$message.'.
+            <br/><br/>Regards,
+            <br/>'.$name;
+
+            //set content-type header for sending HTML email
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+            //additional headers
+            $headers .= 'From: '.$contact. "\r\n";
+            //send email
+            $sentmail = mail($to,$subject,$mailContent,$headers);
+            if($sentmail)
+            {
+            //insert into database
             $message_query="INSERT INTO messages (name,contact,subject,message) VALUES ('$name','$contact','$subject','$message') ";
             $run_message=mysqli_query($connect,$message_query);
             if($run_message){
 
                 $success= '<div class="alert alert-primary" role="alert"> Message sent,we will send a feedback as fast as we can, thank you </div>';
+            }
+            }
+            else
+            {
+                echo mysqli_error($connect);
             }
         }
     }

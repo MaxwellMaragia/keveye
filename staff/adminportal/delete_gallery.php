@@ -28,22 +28,19 @@ else
   $imgs = array();
 
   $cnt = $_POST['checkbox'];
+
+  $sql1 = "SELECT * FROM gallery WHERE id IN (".implode(",", $cnt) . ")";
+  $res = mysqli_query($obj->con,$sql1);
+  
+  while($file = mysqli_fetch_assoc($res))
+  {
+    $un = unlink('../../gallery/'.$file['image']);
+  }
                                          
   $sql = "DELETE FROM gallery WHERE id IN (".implode(",", $cnt) . ")";
   $result = mysqli_query($obj->con,$sql);
   if($result)
   {
-  $sql1 = "SELECT * FROM gallery WHERE id IN (".implode(",", $cnt) . ")";
-  $res = mysqli_query($obj->con,$sql1);
-  while($file = mysqli_fetch_array($res))
-  {
-   $imgs[] = $file;
-  }
-  foreach ($imgs as $row) 
-  {
-    $un = unlink('../../gallery/'.$row['image']);
-  }
-  
   $success = "Images deleted successfully!";
   }
                                                                                     

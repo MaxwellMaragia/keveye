@@ -59,7 +59,7 @@ else
                            </div>
 
                            <div class="form-group">
-                           <textarea class="form-control" rows="12" placeholder="Type event description here" name="desc" required><?=$desc?></textarea>
+                           <textarea class="form-control" rows="8" placeholder="Type event description here" name="desc" required><?=$desc?></textarea>
                            </div>
                            
                            
