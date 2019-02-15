@@ -4,6 +4,15 @@
             <li>
                 <a href="results.php" style="color:white;">Back</a>
             </li>
+             <li>
+                <a href="allcycle_one.php" style="color:white;">CYCLE 1</a>
+            </li>
+            <li>
+                <a href="allcycle_two.php" style="color:white;">CYCLE 2</a>
+            </li>
+            <li>
+                <a href="allresults.php" style="color:white;">AVERAGE</a>
+            </li>
 
         </ul>
         <ul class="nav navbar-nav navbar-right">

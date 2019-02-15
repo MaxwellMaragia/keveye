@@ -13,11 +13,12 @@ else
     else {
         include "functions/actions.php";
         $obj = new DataOperations();
-        $class=$_SESSION['view_results_class'];
+        $form=$_SESSION['view_results_class'];
+        //$form = substr($class, -2,1);
         $period=$_SESSION['view_results_term'];
         $period=$_SESSION['view_results_term'];
 
-        $sql="SELECT * FROM cycle_one WHERE period='$period'  AND class='$class' ORDER BY average DESC";
+        $sql="SELECT * FROM cycle_two WHERE period='$period'  AND form='$form' ORDER BY average DESC";
 
         $execute = mysqli_query($obj->con,$sql);
 
@@ -36,7 +37,7 @@ else
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cycle one results</title>
+    <title>Cycle two results</title>
     <!-- Bootstrap Styles-->
     <?php include "plugins/resources.php" ?>
 
@@ -50,7 +51,7 @@ else
 <div id="page-wrapper">
     <div id="page-inner">
         <!--        contents-->
-        <?php include 'plugins/viewfinalresultsnav.php' ?>
+        <?php include 'plugins/viewresultsnav.php' ?>
 
         <?php
 
@@ -59,8 +60,8 @@ else
             ?>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Form <?=$class?> cycle 1 results for <?=$period?>
-                    <a href="cycle_oneAnalysis.php" target="_blank" style="float: right;"><span class="glyphicon glyphicon-download-alt"></span> BroadSheet</a>
+                    Form <?=$form?> cycle 1 results for <?=$period?>
+                    <a href="allcycle_twoAnalysis.php" target="_blank" style="float: right;"><span class="glyphicon glyphicon-download-alt"></span> BroadSheet</a>
                 </div>
                 <div class="panel-body">
 
@@ -163,7 +164,7 @@ else
         }
         else
         {
-            echo "<div class='alert alert-danger'>No results found for form $class in $period</div>";
+            echo "<div class='alert alert-danger'>No results found for form $form in $period</div>";
         }
 
         ?>

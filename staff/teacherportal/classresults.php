@@ -60,13 +60,13 @@ else
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Form <?=$class?> final average results for <?=$period?>
-<<<<<<< HEAD
-                    <a href="gradeAnalysis.php" target="_blank" style="float: right;"><span class="glyphicon glyphicon-download-alt"></span> BroadSheet</a>
-=======
+
+                    <!-- <a href="gradeAnalysis.php" target="_blank" style="float: right;"><span class="glyphicon glyphicon-download-alt"></span> BroadSheet</a> -->
+
                     <a href="Broadsheet.php" target="_blank" style="float: right;"><span class="glyphicon glyphicon-download-alt"></span> BroadSheet</a>
 
                     <a href="grade_distribution.php" target="_blank" style="float: right;"><span class="glyphicon glyphicon-download-alt"></span> Grade distribution &nbsp;</a>
->>>>>>> 62e835474a9f2552a07b38fb9ec50df0c272af2a
+
                 </div>
                 <div class="panel-body">
 

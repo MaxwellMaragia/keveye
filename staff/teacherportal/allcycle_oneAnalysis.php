@@ -55,7 +55,7 @@ $pdf->Cell(130 ,12,$form,0,0);
 
 $pdf->SetFont('Arial','b','16');
 $pdf->SetX(26);
-$pdf->Cell(15,12,'Subject Percentage/Grades Analysis',0,1);
+$pdf->Cell(15,12,'Cycle One Subject Percentage/Grades Analysis',0,1);
 
 $pdf->SetY(39);
 $pdf->SetX(2);
@@ -127,7 +127,7 @@ $pdf->Cell(6  ,6,'O.P',1,0);
 $pdf->Cell(12.5  ,6,'VAP',1,1);
 
 //fetch results
-$qry = "SELECT * FROM final_result WHERE form='$form' AND period='$period' ORDER BY average DESC";
+$qry = "SELECT * FROM cycle_one WHERE form='$form' AND period='$period' ORDER BY average DESC";
 $run = mysqli_query($obj->con,$qry);
 while ($row = mysqli_fetch_array($run)) 
 {
@@ -155,8 +155,8 @@ while ($row = mysqli_fetch_array($run))
 	$mp = $row['average_points'];
 
 //get total students
-$sql_class="SELECT * FROM final_result WHERE class='$cls' AND period='$period'";
-$sql_form="SELECT * FROM final_result WHERE form='$form' AND period='$period'";
+$sql_class="SELECT * FROM cycle_one WHERE class='$cls' AND period='$period'";
+$sql_form="SELECT * FROM cycle_one WHERE form='$form' AND period='$period'";
 
 $execute_class=mysqli_query($obj->con,$sql_class);
 $total_in_class=mysqli_num_rows($execute_class);
@@ -164,7 +164,7 @@ $execute_form=mysqli_query($obj->con,$sql_form);
 $total_in_form=mysqli_num_rows($execute_form);
 
 //get class rank
-$query = "SELECT admission, average FROM final_result WHERE class='$cls' AND period='$period' ORDER BY average DESC ";
+$query = "SELECT admission, average FROM cycle_one WHERE class='$cls' AND period='$period' ORDER BY average DESC ";
 $exe = mysqli_query($obj->con,$query);
 
 $rank = 0;
@@ -179,7 +179,7 @@ if($rank !== 0){
 }
 
 //get form rank
-$sql = "SELECT admission, average FROM final_result WHERE form='$form' AND period='$period' ORDER BY average DESC ";
+$sql = "SELECT admission, average FROM cycle_one WHERE form='$form' AND period='$period' ORDER BY average DESC ";
 $execute = mysqli_query($obj->con,$sql);
 
 $form_rank = 0;
@@ -387,7 +387,7 @@ if($form_rank !== 0){
 	} 
 
     //fetch previous mpts
-    $q = "SELECT average_points FROM final_result WHERE admission='$adm' AND period='$prevp' ";
+    $q = "SELECT average_points FROM cycle_one WHERE admission='$adm' AND period='$prevp' ";
     $ans = mysqli_query($obj->con,$q);
     $r = mysqli_fetch_array($ans);
     $prevAv = $r[0];

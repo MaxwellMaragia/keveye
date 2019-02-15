@@ -60,6 +60,7 @@ else
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Form <?=$class?> cycle two results for <?=$period?>
+                    <a href="cycle_twoAnalysis.php" target="_blank" style="float: right;"><span class="glyphicon glyphicon-download-alt"></span> BroadSheet</a>
                 </div>
                 <div class="panel-body">
 

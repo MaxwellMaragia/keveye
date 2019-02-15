@@ -9,10 +9,15 @@ else
 require('functions/fpdf/fpdf.php');
 require('functions/actions.php');
 $obj=new DataOperations();
-$form=$_SESSION['view_results_class'];
+$class=$_SESSION['view_results_class'];
 $period=$_SESSION['view_results_term'];
 $periodt = substr($period, -1);
 $periody = substr($period, 0,4);
+$form = substr($class, -2,1);
+
+//<<<<<<< HEAD:staff/teacherportal/gradeAnalysis.php
+
+
 
 //dev
 if($periodt==1)
@@ -28,6 +33,9 @@ $yt = substr($period, 0,9);
 $prevp = $yt.' '.$prevt;
 
 $pdf = new FPDF('L','mm','A4');
+
+//$pdf = new FPDF('L','mm','A3');
+//>>>>>>> 62e835474a9f2552a07b38fb9ec50df0c272af2a:staff/teacherportal/broadsheet.php
 $pdf->AddPage();
 
 //set font to arial,bold,14pt
@@ -51,7 +59,7 @@ $pdf->SetFont('Arial','b','14');
 $pdf->Cell(130 ,12,'Form:',0,0);
 $pdf->SetX(18);
 $pdf->SetFont('Arial','b','14');
-$pdf->Cell(130 ,12,$form,0,0);
+$pdf->Cell(130 ,12,$class,0,0);
 
 $pdf->SetFont('Arial','b','16');
 $pdf->SetX(26);
@@ -127,7 +135,8 @@ $pdf->Cell(6  ,6,'O.P',1,0);
 $pdf->Cell(12.5  ,6,'VAP',1,1);
 
 //fetch results
-$qry = "SELECT * FROM final_result WHERE form='$form' AND period='$period' ORDER BY average DESC";
+
+$qry = "SELECT * FROM cycle_two WHERE class='$class' AND period='$period' ORDER BY average DESC";
 $run = mysqli_query($obj->con,$qry);
 while ($row = mysqli_fetch_array($run)) 
 {
@@ -154,9 +163,9 @@ while ($row = mysqli_fetch_array($run))
 	$tp = $row['total_points'];
 	$mp = $row['average_points'];
 
-//get total students
-$sql_class="SELECT * FROM final_result WHERE class='$cls' AND period='$period'";
-$sql_form="SELECT * FROM final_result WHERE form='$form' AND period='$period'";
+	//get total students
+$sql_class="SELECT * FROM cycle_two WHERE class='$class' AND period='$period'";
+$sql_form="SELECT * FROM cycle_two WHERE form='$form' AND period='$period'";
 
 $execute_class=mysqli_query($obj->con,$sql_class);
 $total_in_class=mysqli_num_rows($execute_class);
@@ -164,7 +173,7 @@ $execute_form=mysqli_query($obj->con,$sql_form);
 $total_in_form=mysqli_num_rows($execute_form);
 
 //get class rank
-$query = "SELECT admission, average FROM final_result WHERE class='$cls' AND period='$period' ORDER BY average DESC ";
+$query = "SELECT admission, average FROM cycle_two WHERE class='$class' AND period='$period' ORDER BY average DESC ";
 $exe = mysqli_query($obj->con,$query);
 
 $rank = 0;
@@ -179,7 +188,7 @@ if($rank !== 0){
 }
 
 //get form rank
-$sql = "SELECT admission, average FROM final_result WHERE form='$form' AND period='$period' ORDER BY average DESC ";
+$sql = "SELECT admission, average FROM cycle_two WHERE form='$form' AND period='$period' ORDER BY average DESC ";
 $execute = mysqli_query($obj->con,$sql);
 
 $form_rank = 0;
@@ -384,10 +393,10 @@ if($form_rank !== 0){
 	foreach ($get_kcpe as $row) 
 	{
 		$kcpe = $row['kcpe'];
-	} 
+	}
 
-    //fetch previous mpts
-    $q = "SELECT average_points FROM final_result WHERE admission='$adm' AND period='$prevp' ";
+	//fetch previous mpts
+    $q = "SELECT average_points FROM cycle_two WHERE admission='$adm' AND period='$prevp' ";
     $ans = mysqli_query($obj->con,$q);
     $r = mysqli_fetch_array($ans);
     $prevAv = $r[0];
@@ -424,7 +433,10 @@ $pdf->Cell(6  ,6,$mg,1,0);
 $pdf->Cell(6  ,6,$class_position,1,0);
 $pdf->Cell(6  ,6,$form_position,1,0);
 $pdf->Cell(12.5  ,6,$dev,1,1);
+
 }
+
+
 
 
 $pdf->Output();
